@@ -1,0 +1,76 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.",
+      "passed": true,
+      "evidence": "The source-boundaries section uses the diff for the removed/retained calls and documented behavior, then separately attributes intent to the PR description, performance results to the final review, complexity wording to the task, and visual framing to implementer notes. It directly identifies the early harmlessness claim as conflicting with the final review."
+    },
+    {
+      "text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+      "passed": true,
+      "evidence": "The renderer rationale and storyboard base Manim on the requested persistent vector whose length, capacity, pointer, backing buffer, and elements change continuously."
+    },
+    {
+      "text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+      "passed": true,
+      "evidence": "It provides editable audience assumptions, a six-scene timed storyboard, a complete timed narration section, an 11-row caption table, and a renderer rationale."
+    },
+    {
+      "text": "The artifact adds no implications, conclusions, next steps, discussion prompts, or causal links that are absent from the supplied context.",
+      "passed": true,
+      "evidence": "The narration stays within the fixture's stated intent, reviewed behavior, task-supplied quadratic description, final diff, geometric growth path, and unchanged API. It adds no product implication or discussion prompt. The approval request directly implements the user's instruction to stop after planning."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "It explicitly says no animation code or video has been produced and that production remains paused until approval; only a Markdown plan exists."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The diff removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Matches the fixture's final diff exactly."
+    },
+    {
+      "claim": "Repeated one-element batches forced exact growth and repeated copies; removing the call restores amortized growth.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture's final review and expressly attributed to it."
+    },
+    {
+      "claim": "The removed call was intended to reduce allocations.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture's PR description."
+    },
+    {
+      "claim": "The early allocator-reuse statement conflicts with the final review.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The two supplied statements respectively characterize the call as probably harmless and as causing benchmark-confirmed repeated growth and copies."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "The user must approve or edit the plan before animation or rendering begins."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add a succinctness criterion so future runs are rewarded for minimizing repeated planning prose while preserving the required storyboard, narration, captions, and evidence boundaries."
+      }
+    ],
+    "overall": "The output is concise relative to the with-skill run and still complete. Some unavoidable repetition remains between the storyboard, narration, and captions, but the approval packet is easy to scan and does not carry a large provenance apparatus beyond what this fixture needs."
+  }
+}

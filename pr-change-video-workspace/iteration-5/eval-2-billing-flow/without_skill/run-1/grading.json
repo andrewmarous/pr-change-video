@@ -1,0 +1,77 @@
+{
+  "expectations": [
+    {
+      "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+      "passed": true,
+      "evidence": "The plan selects Executive and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion framing. The leadership discussion language comes directly from the rollout notes, and no code-derived motivation, benefit, tradeoff, risk, or impact framing is added."
+    },
+    {
+      "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+      "passed": true,
+      "evidence": "It recommends Remotion because the supplied screenshots, UI callouts, and rollout stages call for editorial composition."
+    },
+    {
+      "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+      "passed": true,
+      "evidence": "The plan totals 75 seconds. It uses the available approved screenshots and Acme horizontal logo, preserves the logo aspect ratio, and explicitly declines to invent Acme colors, fonts, spacing rules, or variants. It introduces no new asset prerequisite."
+    },
+    {
+      "text": "The artifact preserves source meaning without adding recommendations, implications, next steps, or invitations to further discussion.",
+      "passed": false,
+      "evidence": "The planned video itself stays source-faithful, but the Source boundary adds the unsupported conclusion \"No other source conflict requires an approval decision.\" The fixture does not make that claim, and whether something requires an approval decision is an interpretation layered onto the evidence. Strict source immutability requires this sentence to be omitted. The renderer recommendation and approval gate were explicitly requested by the prompt and are not the reason for failure."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 550 words.",
+      "passed": true,
+      "evidence": "The output contains 433 whitespace-delimited words. It combines narration and captions in a single timed table, uses one compact source-boundary section, and does not duplicate the scenes as a separate storyboard or script. Any repeated on-screen phrase is necessary to specify the visual treatment."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "The Approval section says no animation source or render has been created. The run contains only outputs/output.md."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.8333333333
+  },
+  "claims": [
+    {
+      "claim": "Three pages become one guided flow whose steps are review, payment, and confirmation.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture PR description and final diff summary."
+    },
+    {
+      "claim": "The existing form and mutation remain in use, while pricing, permissions, invoices, and payment processing do not change.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture final diff summary."
+    },
+    {
+      "claim": "Internal enablement precedes rollout to ten percent of eligible workspaces, and leadership discussion is framed around adoption and rollout confidence.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture rollout notes."
+    },
+    {
+      "claim": "No other source conflict requires an approval decision.",
+      "type": "quality",
+      "verified": false,
+      "evidence": "This is an added interpretive conclusion, not an immutable fact supplied by the fixture."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "Remove the unsupported conclusion about other source conflicts and approval decisions."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The packet is concise and non-repetitive at 433 words. One avoidable source-review conclusion prevents full compliance with strict immutability."
+  }
+}

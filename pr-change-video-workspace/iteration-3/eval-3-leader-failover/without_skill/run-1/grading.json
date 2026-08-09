@@ -1,0 +1,87 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+      "passed": true,
+      "evidence": "The plan confines behavior to the six facts in the PR fixture and attributes communication framing to the TPM, reviewer, and implementer statements. The eval prompt directly establishes the contradiction with the automatic-recovery suggestion. The output rejects seamless and transparent framing and does not add an unsupported causal link, interpretation, implication, conclusion, recommendation, next step, question, or discussion invitation. Its renderer rationale is a production-format judgment, not a claim about the implementation's purpose or merit."
+    },
+    {
+      "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+      "passed": true,
+      "evidence": "The TPM plan covers the runtime, protocol, and storage implementation sequence and neutrally presents the four concerns explicitly stated by the TPM: dependencies, observable interruption, rollout order, and the next recovery slice."
+    },
+    {
+      "text": "The artifact includes boundaries, dependencies, rollout, interruption, or discussion points only when explicitly present in the supplied context and adds no next steps or calls to discussion.",
+      "passed": true,
+      "evidence": "The implementation boundaries come from the PR, while all four coordination topics come verbatim from the TPM's standup statement. The plan says it will not provide absent rollout, timing, dependency, or recovery details and shows neutral labels rather than questions, recommendations, next steps, or an invitation to discuss."
+    },
+    {
+      "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+      "passed": true,
+      "evidence": "The rationale identifies persistent leader, follower, lease, event, vote, token, and storage objects, selects Manim to preserve them through state changes, and explains that Remotion's editorial scenes are less suited to that identity-preserving sequence."
+    },
+    {
+      "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+      "passed": true,
+      "evidence": "The production boundary assigns every source edit, caption, asset, render command, and rendered output to coding/rendering. Review only checks the MP4 and is explicitly barred from editing or rendering."
+    },
+    {
+      "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+      "passed": true,
+      "evidence": "Clipping, missing text, caption timing, and scene-duration errors go to coding/rendering for correction. Meaning, audience, narration, renderer, duration, visual direction, and any proposed analysis, implication, conclusion, next step, or discussion prompt return to the user."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 3843,
+    "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The PR implements queued LeaseExpired handling, quorum election, increasing fencing tokens, and stale-token rejection.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The behavior summary and storyboard match the fixture's final diff summary."
+    },
+    {
+      "claim": "The PR does not reconstruct in-flight work or guarantee zero downtime or transparent recovery.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The plan accurately reproduces the PR's explicit limitations and the final review's seamless-language warning."
+    },
+    {
+      "claim": "The TPM named dependencies, observable interruption, rollout order, and the next recovery slice.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The four labels and narration are directly supported by the TPM standup statement."
+    },
+    {
+      "claim": "No animation or render has been created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "The run contains only outputs/output.md and opens by stating that no animation or render has been created."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The sources do not provide rollout order, interruption duration, a dependency list, or the definition of the next recovery slice."
+    ],
+    "needs_review": [
+      "The audience treatment, source selection, renderer, narration, timing, and visual system await user approval."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add an explicit approval-gate assertion so the required pre-render stop is scored rather than merely observed."
+      }
+    ],
+    "overall": "At 565 words, the baseline is substantially more succinct than the skill output while retaining the required evidence boundary, storyboard, approval request, and agent protocol. Its concision does not sacrifice any scored behavior."
+  }
+}

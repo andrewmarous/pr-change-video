@@ -1,0 +1,77 @@
+{
+  "expectations": [
+    {
+      "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+      "passed": true,
+      "evidence": "The plan selects Executive and exposes editable viewer knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion framing. Leadership and adoption-and-rollout-confidence framing is directly attributable to rollout notes, and no motivation, benefit, tradeoff, risk, or impact is inferred from code."
+    },
+    {
+      "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+      "passed": true,
+      "evidence": "It recommends Remotion because the supplied approved screenshots, UI callouts, and rollout stages call for editorial composition."
+    },
+    {
+      "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+      "passed": true,
+      "evidence": "The plan totals 75 seconds. It uses the available approved screenshots and Acme horizontal logo, preserves its aspect ratio, and does not invent Acme colors, fonts, spacing rules, or logo variants. No unsupported asset prerequisite is added."
+    },
+    {
+      "text": "The artifact preserves source meaning without adding recommendations, implications, next steps, or invitations to further discussion.",
+      "passed": true,
+      "evidence": "All video claims are direct restatements of the fixture. The close preserves the exact source-stated adoption-and-rollout-confidence framing without adding a question, conclusion, synthesized completeness claim, recommendation, next step, or invitation. The requested renderer recommendation and approval gate are task mechanics rather than additions to source meaning."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 550 words.",
+      "passed": true,
+      "evidence": "The output contains 413 whitespace-delimited words. It consists of one treatment section and one combined timed-scene table, with no redundant ledger, storyboard, or narration section. Brief on-screen-text echoes are necessary production specifications."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "The Approval section states that no animation source or render has been created, and the run contains only outputs/output.md."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "Three separate billing settings pages become one guided flow with the stated three steps.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture PR description and final diff summary."
+    },
+    {
+      "claim": "The existing payment form and mutation remain in use and the listed billing areas do not change.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture final diff summary."
+    },
+    {
+      "claim": "There is no measured checkout-speed claim.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture review discussion."
+    },
+    {
+      "claim": "The existing flag remains in place, internal enablement comes first, and ten percent of eligible workspaces follows, with leadership discussion framed around adoption and rollout confidence.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture review discussion and rollout notes."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "The user must approve or revise the plan before production, as requested."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The output contains no synthesized completeness claim, remains strictly source-faithful, and is concise and non-repetitive at 413 words."
+  }
+}

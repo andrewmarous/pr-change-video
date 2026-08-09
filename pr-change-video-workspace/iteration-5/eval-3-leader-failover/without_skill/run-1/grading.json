@@ -1,0 +1,92 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+      "passed": true,
+      "evidence": "All implemented behavior and limits in the plan match the PR fixture. The source-boundary conflict is explicitly supported by the eval prompt, PR limits, and review warning. The output rejects seamless, transparent, zero-downtime, and unnoticeable recovery as behavior and introduces no unsupported interpretation, implication, conclusion, recommendation, next step, question, or invitation."
+    },
+    {
+      "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+      "passed": true,
+      "evidence": "The TPM-oriented sequence covers runtime, protocol, election, storage, and recovery boundaries. The final scene neutrally presents the fixture's four coordination concerns without adding a risk conclusion or answer."
+    },
+    {
+      "text": "The artifact includes boundaries, dependencies, rollout, interruption, or discussion points only when explicitly present in the supplied context and adds no next steps or calls to discussion.",
+      "passed": true,
+      "evidence": "The boundaries come from the PR and the four topics come directly from the TPM standup statement. The plan expressly withholds answers and actions, and the final scene uses neutral labels with no questions, recommendations, next steps, or call to discussion."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 550 words.",
+      "passed": true,
+      "evidence": "The packet is 402 words. The source boundary records provenance and the timed table specifies the actual narration; beyond this necessary pairing, the output does not add redundant summary, omission, storyboard, or checklist sections."
+    },
+    {
+      "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+      "passed": true,
+      "evidence": "It identifies the persistent lease, runtime, protocol, follower, vote, term-token, and storage objects, recommends Manim for tracking their state changes, and explains why Remotion's scene composition is less direct."
+    },
+    {
+      "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+      "passed": true,
+      "evidence": "Coding/rendering owns every source edit and render. Review only verifies the MP4 and never edits or renders."
+    },
+    {
+      "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+      "passed": true,
+      "evidence": "Small implementation mismatches return to coding/rendering for correction and rerendering; higher-level content or creative changes return to the user."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 2702,
+    "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The PR queues LeaseExpired, elects after quorum, uses increasing fencing tokens, and rejects stale writes.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The timed scenes match the fixture's first four diff bullets."
+    },
+    {
+      "claim": "The PR does not reconstruct in-flight work or guarantee transparent or zero-downtime recovery.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "These statements match the final two diff bullets and final review."
+    },
+    {
+      "claim": "The TPM identified four coordination topics as needed information.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The final narration accurately repeats the TPM's listed topics."
+    },
+    {
+      "claim": "No animation or render has been created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "Only outputs/output.md exists, and it explicitly says no animation or render has been created."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The sources do not answer the four TPM topics used in the final scene."
+    ],
+    "needs_review": [
+      "Production remains paused pending approval or revision."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add an assertion that explicitly checks the pre-production approval gate and absence of source or render artifacts."
+      }
+    ],
+    "overall": "The 402-word packet is source-faithful, comfortably below the limit, and practically non-repetitive while retaining the required production contract."
+  }
+}

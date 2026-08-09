@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "pr-change-video", "runs": [{"id": "eval-1-vector-reserve-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "output.md", "type": "text", "content": "# Video plan: Avoid exact reserve during incremental append\n\n**Status:** Awaiting user approval. No animation source has been created, and no video has been rendered.\n\n## Recommendation summary\n\n- **Audience preset:** IC\n- **Fine-tuning:** Mechanism-first, precise, and compact; explain one persistent vector rather than survey the PR.\n- **Renderer:** Manim\n- **Target duration:** 90 seconds\n- **Primary takeaway:** Repeated `reserve_exact` calls on incremental appends forced exact growth and repeated copies. The final change removes that call so `extend` uses normal vector growth and restores amortized growth.\n- **Follow-up conversation this enables:** Decide whether this path needs performance regression coverage and whether similar incremental-append paths deserve review.\n\n### Editable IC assumptions\n\n- **Assumed viewer knowledge:** Understands vectors, heap allocation, and basic complexity; does not know this call path.\n- **Desired takeaway:** Understand why the removed line changes allocation behavior despite the small diff.\n- **Technical depth:** Show length, capacity, buffer replacement, and copies; do not derive amortized analysis formally.\n- **Terminology:** Use `length`, `capacity`, `heap buffer`, `reallocation`, `copy`, `reserve_exact`, `extend`, and `amortized growth`. Define capacity through the visual.\n- **Emphasis:** Repeated one-element batches and the continuity of a single vector across backing-buffer changes.\n- **Exclusions:** Benchmark charts or values, allocator internals, exact growth-factor claims, and a chronological PR walkthrough.\n- **Tone:** Diagnostic and matter-of-fact.\n- **Discussion enabled:** Regression coverage and whether other call sites override normal collection growth.\n\nAll fields above are recommendations and can be changed before approval.\n\n## Evidence and confidence\n\n### Implementation facts from the PR\n\n- **[P1 \u2014 final diff]** The final change removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.\n- **[P2 \u2014 final diff annotation]** `extend` uses the iterator size hint and the vector's normal growth strategy.\n- **[P3 \u2014 final diff annotation]** There is no public API change.\n\nThese facts describe only the implemented code and behavior. They do not establish the creator's motivation or evaluation by themselves.\n\n### Narrative claims from user-provided context\n\n- **[C1 \u2014 task prompt]** The change fixes repeated vector reserve calls causing quadratic reallocations.\n- **[C2 \u2014 PR description]** The old exact-reserve call was intended to reduce allocations, and the requested replacement is the collection's geometric growth path.\n- **[C3 \u2014 final review]** A benchmark confirmed that repeated one-element batches forced exact growth and repeated copies; removing `reserve_exact` restores amortized growth.\n- **[C4 \u2014 implementer notes]** Explain the failure with a persistent vector, length, capacity, heap buffers, reallocations, and copied elements. Do not make a benchmark report.\n- **[C5 \u2014 early discussion]** The implementer initially said allocator reuse should make the call harmless. This is an attributed early hypothesis, not implemented behavior.\n\n### Missing narrative context and questions\n\n- No benchmark values, workload distribution, runtime version, allocator guarantee, or exact geometric growth factor are supplied. The plan excludes all such claims.\n- The request does not specify whether regression coverage already exists. The closing line asks about it; it does not claim coverage is absent.\n- No brand assets are supplied. The plan recommends the neutral fallback treatment below.\n\n### Contradictions and caveats\n\n- **Material contradiction:** C5 says the old call was probably harmless. C3 says the benchmark confirmed exact growth and repeated copies. P1 shows that the final implementation removes the call. The plan treats C5 only as a superseded hypothesis and uses the final diff for what shipped.\n- The visual will use small illustrative capacities. It will not imply a guaranteed doubling factor or a particular allocator implementation.\n- \u201cQuadratic\u201d is supported by the user's task framing; \u201crepeated copies\u201d and \u201crestores amortized growth\u201d are directly attributed to the final review. The code alone is not used to invent these evaluative claims.\n\n## Content boundaries\n\n### Include\n\n- One stable vector identity across the full explanation.\n- The old path's repeated exact growth and element copies, as stated in C1 and C3.\n- Length, capacity, backing buffers, and copied elements, as requested in C4.\n- The exact final code change from P1.\n- Normal growth via `extend` from P2 and restored amortized growth from C3.\n- No-public-API-change boundary from P3.\n\n### Exclude\n\n- Numeric performance claims and benchmark graphics.\n- A specific capacity multiplier.\n- Allocator guarantees or implementation detail not in the context set.\n- Any claim that maintainability, safety, or scalability changed.\n- The early \u201charmless\u201d statement as a valid explanation.\n\n## Renderer decision\n\n### Required visual primitives\n\n- A persistent vector whose length and capacity change.\n- A stable pointer relationship that can move from one heap buffer to another.\n- Existing elements visibly copied during reallocation.\n- A contrast in which spare capacity permits later appends without another buffer move.\n\n### Evidence for Manim\n\nThe implementer notes explicitly request a persistent vector, length, capacity, buffers, reallocations, and copied elements (C4). The final review identifies repeated exact growth and copies as the failure mechanism (C3). Comprehension therefore depends on objects retaining identity while state and relationships evolve. Manim's direct transformations and spatial continuity fit that explanatory job.\n\n### Why Remotion is weaker\n\nRemotion could arrange the diff and explanatory cards, but this plan's dominant primitive is not editorial composition. It is continuity: the viewer must track the same vector while buffers are allocated, populated, and replaced. Slide-like cuts would make that causal sequence harder to follow.\n\n### Dependencies and risks\n\n- Production needs Manim and FFmpeg.\n- Illustrative capacities must be labeled so they are not mistaken for runtime guarantees.\n- Copy animations can become busy; use a small number of cells and a single copy counter.\n- Keep the whole video in Manim; no mixed-renderer pipeline is proposed.\n\n## Timed narrative\n\n| Time | Narrative purpose | Narration | On-screen content | Provenance |\n|---|---|---|---|---|\n| 0:00\u20130:10 | State the documented failure | \u201cThis path reserved exactly enough space before every append. With repeated small batches, the intended allocation optimization caused repeated growth instead.\u201d | One vector; queued `+1` batches; \u201cExact reserve, repeated growth\u201d | C1, C2, C3 |\n| 0:10\u20130:27 | Show the old mechanism | \u201cWhen length meets capacity, the next exact reserve creates a just-larger buffer and copies the existing elements. Then the cycle repeats.\u201d | Length/capacity counters; old and new buffers; copy counter | C3, C4 |\n| 0:27\u20130:39 | Name the accumulated behavior | \u201cFor one-element batches, those repeated copies produce the quadratic behavior this change fixes.\u201d | `1 + 2 + 3 + \u2026` copy motif; \u201cquadratic total work\u201d | C1, C3 |\n| 0:39\u20130:51 | Show what changed | \u201cThe final diff removes `reserve_exact`. The append now goes directly through `extend`.\u201d | Exact two-line-to-one-line diff | P1 |\n| 0:51\u20131:10 | Show implemented growth behavior and reviewed impact | \u201c`extend` uses its iterator size hint and the vector's normal growth strategy. Spare capacity lets later appends reuse the buffer, restoring amortized growth.\u201d | Illustrative spare cells; several appends without buffer replacement | P2 for mechanism; C3 for evaluative result; C4 for visual framing |\n| 1:10\u20131:21 | Bound the change | \u201cThis changes the internal append path. The public API stays the same, and this video makes no claim about a specific growth factor.\u201d | \u201cInternal growth path\u201d / \u201cNo public API change\u201d / \u201cCapacity illustrative\u201d | P3; missing-context caveat |\n| 1:21\u20131:30 | Prepare follow-up | \u201cFor discussion: should this path get performance regression coverage, and are there similar exact-reserve call sites?\u201d | Two clearly marked questions | Planning questions; no factual claim |\n\nTotal: **90 seconds**.\n\n## Storyboard\n\n### Scene 1: Intended optimization, documented failure\n\n- **Duration:** 10 seconds\n- **Purpose:** Establish the problem using supplied context, not an interpretation of the diff.\n- **Visual state and motion:** A persistent `items` vector receives a queue of one-element batches. A `reserve exact +1` tag activates before each arrival.\n- **On-screen text:** \u201cExact reserve, repeated growth\u201d\n- **Provenance type and evidence references:** Context-supported claim \u2014 C1, C2, C3\n- **Transition:** Move the camera from the vector object to its buffer pointer.\n\n### Scene 2: The repeated-copy loop\n\n- **Duration:** 17 seconds\n- **Purpose:** Visualize the behavior confirmed by the final review.\n- **Visual state and motion:** Keep the vector identity fixed. When length equals capacity, create a one-cell-larger illustrative buffer, copy cells across, redirect the pointer, append, and repeat.\n- **On-screen text:** `length`, `capacity`, `new buffer`, `copy existing elements`\n- **Provenance type and evidence references:** Context-supported claim and requested framing \u2014 C3, C4\n- **Transition:** Pull back while copy paths remain visible.\n\n### Scene 3: Accumulated work\n\n- **Duration:** 12 seconds\n- **Purpose:** Connect the repeated-copy model to the stated quadratic failure.\n- **Visual state and motion:** Collapse successive copy counts into `1 + 2 + 3 + \u2026`; pair it with the growing element count without a formal proof.\n- **On-screen text:** \u201cRepeated copies \u2192 quadratic total work\u201d\n- **Provenance type and evidence references:** Context-supported claim \u2014 C1, C3\n- **Transition:** Collapse the sum into the line removed by the diff.\n\n### Scene 4: The final change\n\n- **Duration:** 12 seconds\n- **Purpose:** Present exactly what the PR implements.\n- **Visual state and motion:** Show the two relevant lines. Remove `items.reserve_exact(batch.len())`; keep `items.extend(batch)` centered.\n- **On-screen text:** \u201cRemove explicit exact reserve\u201d / \u201cKeep extend\u201d\n- **Provenance type and evidence references:** Implementation fact \u2014 P1\n- **Transition:** The remaining `extend` call becomes the label on the vector operation.\n\n### Scene 5: Normal vector growth\n\n- **Duration:** 19 seconds\n- **Purpose:** Show the implemented mechanism and the reviewed outcome without inventing a growth factor.\n- **Visual state and motion:** An illustrative buffer with spare cells appears. Several one-element batches advance length while capacity and the buffer remain stable.\n- **On-screen text:** \u201cIterator size hint\u201d / \u201cNormal growth\u201d / \u201cSpare capacity\u201d / \u201cIllustrative\u201d\n- **Provenance type and evidence references:** Implementation fact \u2014 P2; context-supported outcome and framing \u2014 C3, C4\n- **Transition:** Align old and new visual states for a compact comparison.\n\n### Scene 6: Scope and caveat\n\n- **Duration:** 11 seconds\n- **Purpose:** State only documented boundaries.\n- **Visual state and motion:** Fade the internal buffer model into an unchanged API boundary; retain a small \u201cillustrative capacity\u201d badge.\n- **On-screen text:** \u201cAmortized growth restored\u201d / \u201cNo public API change\u201d\n- **Provenance type and evidence references:** Context-supported outcome \u2014 C3; implementation fact \u2014 P3; missing-context caveat\n- **Transition:** Slide the result upward to reveal questions.\n\n### Scene 7: Follow-up questions\n\n- **Duration:** 9 seconds\n- **Purpose:** Prepare the creator conversation without alleging missing work.\n- **Visual state and motion:** Present two questions one at a time on a restrained end card.\n- **On-screen text:** \u201cRegression coverage?\u201d / \u201cSimilar call sites?\u201d\n- **Provenance type and evidence references:** Planning questions, explicitly not factual claims\n- **Transition:** Fade out.\n\n## Narration script\n\n**0:00\u20130:10**  \nThis path reserved exactly enough space before every append. With repeated small batches, the intended allocation optimization caused repeated growth instead.\n\n**0:10\u20130:27**  \nWhen length meets capacity, the next exact reserve creates a just-larger buffer and copies the existing elements. Then the cycle repeats.\n\n**0:27\u20130:39**  \nFor one-element batches, those repeated copies produce the quadratic behavior this change fixes.\n\n**0:39\u20130:51**  \nThe final diff removes `reserve_exact`. The append now goes directly through `extend`.\n\n**0:51\u20131:10**  \n`extend` uses its iterator size hint and the vector's normal growth strategy. Spare capacity lets later appends reuse the buffer, restoring amortized growth.\n\n**1:10\u20131:21**  \nThis changes the internal append path. The public API stays the same, and this video makes no claim about a specific growth factor.\n\n**1:21\u20131:30**  \nFor discussion: should this path get performance regression coverage, and are there similar exact-reserve call sites?\n\n## Caption plan\n\nUse sentence-level captions inside the lower safe area. Limit each cue to two lines and keep code identifiers exact.\n\n| Cue | Time | Caption |\n|---|---|---|\n| 1 | 00:00\u201300:05 | This path reserved exactly enough space before every append. |\n| 2 | 00:05\u201300:10 | With small batches, the intended optimization caused repeated growth. |\n| 3 | 00:10\u201300:18 | When length meets capacity, exact reserve creates a just-larger buffer. |\n| 4 | 00:18\u201300:27 | It copies existing elements, and the cycle repeats. |\n| 5 | 00:27\u201300:39 | Those repeated copies produce the quadratic behavior this change fixes. |\n| 6 | 00:39\u201300:45 | The final diff removes `reserve_exact`. |\n| 7 | 00:45\u201300:51 | The append goes directly through `extend`. |\n| 8 | 00:51\u201301:00 | `extend` uses its size hint and normal vector growth. |\n| 9 | 01:00\u201301:10 | Spare capacity lets later appends reuse the buffer. |\n| 10 | 01:10\u201301:16 | The public API stays the same. |\n| 11 | 01:16\u201301:21 | No specific growth factor is claimed. |\n| 12 | 01:21\u201301:26 | Should this path get regression coverage? |\n| 13 | 01:26\u201301:30 | Are there similar exact-reserve call sites? |\n\n## Visual system and branding\n\nNo brand assets were provided. Use the restrained fallback: 16:9 at 1920\u00d71080; dark neutral background; off-white primary text; cool blue for the stable vector and spare capacity; warm amber for allocations, warnings, and copies; modern sans-serif labels; monospace only for code. Keep the persistent vector blue throughout so its identity survives buffer transformations.\n\n## Approval checklist\n\n- [ ] Audience preset and editable assumptions\n- [ ] Message, takeaway, and provenance boundaries\n- [ ] Content inclusions, exclusions, contradiction, and caveats\n- [ ] Manim renderer decision\n- [ ] Storyboard, narration, and captions\n- [ ] 90-second duration\n- [ ] Restrained fallback visual treatment\n\nReply with approval or requested planning changes. Production remains blocked until you approve this packet.\n"}], "grading": {"expectations": [{"text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.", "passed": true, "evidence": "The plan explicitly separates P1-P3 implementation facts from C1-C5 narrative claims. Motivation comes from the PR description (C2), evaluated impact from the final review (C3), framing from implementer notes (C4), and the contradiction from the early discussion versus final review. It labels regression coverage and similar call sites as planning questions rather than facts and excludes unsupported benchmark values, allocator guarantees, growth factors, and broader impact claims."}, {"text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.", "passed": true, "evidence": "The Manim rationale cites implementer notes C4 and final review C3, then explains that the persistent vector changes length and capacity while buffers are allocated, populated, and replaced and elements are copied."}, {"text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.", "passed": true, "evidence": "It includes an explicit editable IC assumptions section, a seven-scene storyboard with durations and provenance, a fully timed narration script, a 13-cue caption table with exact time ranges, and a detailed renderer decision."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "The status says no animation source or video has been created, the closing says production is blocked until approval, and the run contains only a Markdown planning output."}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}, "claims": [{"claim": "The diff removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.", "type": "factual", "verified": true, "evidence": "Matches the final diff in `pr-change-video/evals/files/vector-reserve-pr.md`."}, {"claim": "Repeated one-element batches forced exact growth and repeated copies, while removing `reserve_exact` restores amortized growth.", "type": "factual", "verified": true, "evidence": "Directly supported by the fixture's final-review statement and consistently attributed to C3 rather than inferred from code."}, {"claim": "The exact-reserve call was intended to reduce allocations.", "type": "factual", "verified": true, "evidence": "Directly supported by the fixture's PR description and attributed to C2."}, {"claim": "No animation source or rendered video was created.", "type": "process", "verified": true, "evidence": "The run contains only `outputs/output.md`, which is an approval-stage planning packet."}], "user_notes_summary": {"uncertainties": [], "needs_review": ["User approval is required for the audience, provenance boundaries, renderer, storyboard, narration, captions, duration, and visual treatment."], "workarounds": []}, "eval_feedback": {"suggestions": [], "overall": "The revised provenance assertion is discriminating and fully verifiable against the supplied fixture. The output satisfies it with explicit claim-level source separation."}}}, {"id": "eval-1-vector-reserve-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "output.md", "type": "text", "content": "# Planning draft: Restoring vector growth behavior\n\nNo animation or render has been created. This plan is ready for your approval or edits.\n\n## Recommended approach\n\n- **Audience:** ICs familiar with vectors and basic allocation concepts\n- **Length:** 90 seconds\n- **Renderer:** Manim\n- **Core message:** The old incremental-append path repeatedly requested exact capacity, causing reallocations and copies. The final PR removes that explicit reservation so `extend` can use normal vector growth.\n- **Style:** Technical, visual, and mechanism-first; no benchmark report\n\nEditable assumptions: viewers know length versus capacity; the terms heap buffer, reallocation, and amortized growth are appropriate; benchmark numbers and allocator internals are out of scope; and the close should invite discussion about regression coverage and similar call sites.\n\n## Evidence and conflict handling\n\nThe final diff is authoritative about the implementation:\n\n```diff\n- items.reserve_exact(batch.len());\n  items.extend(batch);\n```\n\nThe fixture also states that `extend` uses the iterator size hint and normal vector growth, and that the public API is unchanged.\n\nThe surrounding context supplies the explanation and evaluation. The PR description says exact reserve was intended to reduce allocations. The final review says the benchmark found repeated exact growth and copies for one-element batches, and that removing the call restores amortized growth. The implementer notes request a persistent-vector explanation and explicitly reject a benchmark-report format.\n\nThe early comment that allocator reuse would probably make the call harmless conflicts with the final review and the change that actually shipped. It will not be presented as the correct explanation. At most, it can appear as a crossed-out early hypothesis.\n\nNo benchmark values, exact capacity multiplier, allocator guarantee, or claim about existing regression coverage is available. The video will not invent them.\n\n## Why Manim\n\nThe central explanation is a stateful mechanism: one vector persists while its length, capacity, backing buffer, and copy count change. Manim can preserve the identity of these objects across transformations and make each reallocation spatially legible. A timeline-compositing approach would work for the code diff but would be less effective for showing the repeated buffer changes.\n\n## Timed storyboard\n\n| Time | Scene | Visual and narration |\n|---|---|---|\n| 0:00\u20130:10 | Set up the problem | A vector receives repeated `+1` batches. \u201cThis path reserved exactly enough space before each append. With repeated small batches, that caused repeated growth.\u201d |\n| 0:10\u20130:28 | Old behavior | Keep the vector identity fixed. Each full buffer is replaced by one with one illustrative extra cell; existing elements copy across. \u201cLength catches capacity, exact reserve creates a new buffer, and all existing elements move again.\u201d |\n| 0:28\u20130:40 | Accumulated cost | Copy counts become `1 + 2 + 3 + \u2026`. \u201cAcross one-element batches, this repeated work produces the quadratic behavior described in the PR context.\u201d |\n| 0:40\u20130:52 | Final diff | Remove the `reserve_exact` line and retain `extend(batch)`. \u201cThe shipped fix removes the explicit exact reserve.\u201d |\n| 0:52\u20131:10 | New behavior | Show an illustrative growth event leaving spare capacity, then several appends without a new buffer. \u201c`extend` uses its size hint and the vector's normal growth strategy, restoring amortized growth.\u201d |\n| 1:10\u20131:22 | Scope | Show \u201cNo public API change\u201d and an \u201cillustrative capacity\u201d qualifier. \u201cThis is an internal growth-path change, not an API change or a promise about a specific growth factor.\u201d |\n| 1:22\u20131:30 | Discussion | End card: \u201cRegression coverage?\u201d and \u201cSimilar call sites?\u201d \u201cThose are the questions to take into the follow-up with the creator.\u201d |\n\n## Narration script\n\n**0:00\u20130:10** \u2014 This path reserved exactly enough space before each append. With repeated small batches, that caused repeated growth.\n\n**0:10\u20130:28** \u2014 Length catches capacity, exact reserve creates a new buffer, and all existing elements move again. With the next small append, the cycle repeats.\n\n**0:28\u20130:40** \u2014 Across one-element batches, this repeated work produces the quadratic behavior described in the PR context.\n\n**0:40\u20130:52** \u2014 The shipped fix removes the explicit exact reserve and leaves the append to `extend`.\n\n**0:52\u20131:10** \u2014 `extend` uses its iterator size hint and the vector's normal growth strategy. Spare capacity lets later batches reuse the buffer, restoring amortized growth.\n\n**1:10\u20131:22** \u2014 This is an internal growth-path change, not an API change or a promise about a specific growth factor.\n\n**1:22\u20131:30** \u2014 For the follow-up: should this path get regression coverage, and are there similar exact-reserve call sites?\n\n## Caption plan\n\nUse short sentence-level captions in the lower safe area, synchronized to the seven narration blocks. Split the two longer blocks at 0:19 and 1:01 so no caption exceeds two lines. Preserve `reserve_exact` and `extend` exactly in monospace styling.\n\nKey on-screen labels:\n\n- `length`\n- `capacity`\n- `new heap buffer`\n- `copy existing elements`\n- `spare capacity`\n- `amortized growth restored`\n- `no public API change`\n\n## Visual treatment\n\nUse a dark neutral 16:9 frame, off-white text, blue for the persistent vector and reusable capacity, and amber for allocations and copies. Capacity values must carry an \u201cillustrative\u201d label. No brand assets were supplied, so this neutral system is the proposed default.\n\n## Approval points\n\nPlease approve or revise the IC assumptions, Manim selection, 90-second sequence, narration, exclusions, visual treatment, and closing questions. I will not begin animation or rendering until the plan is approved.\n"}], "grading": {"expectations": [{"text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.", "passed": true, "evidence": "The output confines the diff section to the removed and retained calls, iterator size-hint behavior, and unchanged API. It separately attributes intent to the PR description, performance findings to the final review, and visual framing to implementer notes. It identifies the early allocator-reuse comment as conflicting with the final review. Unsupported benchmark values, growth factors, allocator guarantees, and existing-regression-coverage claims are explicitly excluded; the closing items are phrased as questions."}, {"text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.", "passed": true, "evidence": "The 'Why Manim' section bases the choice on one persistent vector whose length, capacity, backing buffer, and copy count change, and the storyboard animates buffer replacement and element copying."}, {"text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.", "passed": true, "evidence": "It gives editable IC assumptions, a seven-part storyboard with exact time ranges, a separately timed narration script, caption synchronization and split-point instructions, and an explicit Manim rationale."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "It opens by stating that no animation or render has been created and ends by withholding both until approval. The run contains only the Markdown plan."}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}, "claims": [{"claim": "The diff removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.", "type": "factual", "verified": true, "evidence": "Matches the final diff in `pr-change-video/evals/files/vector-reserve-pr.md`."}, {"claim": "Repeated one-element batches caused exact growth and repeated copies, and removing the call restores amortized growth.", "type": "factual", "verified": true, "evidence": "Directly supported by the fixture's final review; the output identifies that review as the source rather than presenting the conclusion as an inference from the diff."}, {"claim": "Exact reserve was intended to reduce allocations.", "type": "factual", "verified": true, "evidence": "Directly supported by the fixture's PR description and attributed to that surrounding context."}, {"claim": "No animation or render was created.", "type": "process", "verified": true, "evidence": "Only `outputs/output.md` exists, and it is expressly an approval-stage planning draft."}], "user_notes_summary": {"uncertainties": [], "needs_review": ["User approval is required for the IC assumptions, renderer, sequence, narration, exclusions, visuals, and closing questions."], "workarounds": []}, "eval_feedback": {"suggestions": [{"assertion": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.", "reason": "The current wording permits a prose caption plan without explicit cue rows. If production requires machine-usable captions, require cue-level timestamps and caption text."}], "overall": "The baseline also satisfies the revised provenance boundary and all other assertions. Cue-level caption requirements would distinguish the more production-ready planning packet from a general caption strategy."}}}, {"id": "eval-2-billing-flow-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "output.md", "type": "text", "content": "# Video plan: Consolidate billing settings into a guided flow\n\n## Recommendation summary\n\n- **Audience preset:** Executive. The supplied rollout notes explicitly ask to prepare leadership to discuss adoption and rollout confidence rather than implementation files.\n- **Fine-tuning recommendations (all editable):**\n  - **Assumed viewer knowledge:** Viewers know Acme's product and staged-rollout practice but not the console implementation.\n  - **Primary takeaway:** The PR consolidates three billing settings pages into one guided flow, while the supplied context frames the follow-up around adoption and rollout confidence.\n  - **Technical depth:** Low. Mention reuse of the existing payment form and server mutation only to define the implementation boundary.\n  - **Terminology:** \u201cGuided billing flow,\u201d \u201celigible workspaces,\u201d and \u201cstaged rollout.\u201d Avoid component and event-schema terminology.\n  - **Emphasis:** The new three-step flow, unchanged payment-processing scope, and the context-specified rollout conversation.\n  - **Exclusions:** Implementation files, analytics schemas, invented outcome claims, and any claim that checkout is faster.\n  - **Tone:** Concise, factual, and measured.\n  - **Discussion enabled:** Which observed entry, completion, cancellation, and success signals will give leadership confidence to expand rollout?\n- **Renderer:** Remotion.\n- **Target duration:** 85 seconds.\n- **Follow-up conversation:** Adoption and rollout confidence, exactly as requested in the rollout notes.\n\nThese are planning recommendations. The audience knowledge, takeaway, depth, terminology, emphasis, exclusions, tone, and closing question can be revised before approval.\n\n## Evidence and confidence\n\n### Implementation facts from the PR\n\n- `BillingFlow` has review, payment, and confirmation steps.\n- The flow reuses the existing payment form and server mutation.\n- Analytics record flow entry, step completion, cancellation, and success.\n- Pricing, permissions, invoices, and payment processing do not change.\n- The final revision corrects mobile spacing.\n\n### Narrative claims from user-provided context\n\n- The PR description frames the change as replacing three separate billing settings pages with one guided flow in which users remain throughout review, payment-detail update, and confirmation.\n- The review discussion says rollout remains behind the existing `billing_flow_v2` flag.\n- The rollout notes specify internal enablement followed by 10% of eligible workspaces.\n- The rollout notes say the video should prepare leadership to discuss adoption and rollout confidence, not implementation files.\n\n### Missing narrative context and questions\n\n- No success thresholds, observation window, owner, or promotion criteria are supplied. The video can ask what evidence earns expansion, but it must not answer that question.\n- The context does not claim that the new experience is simpler, easier, quicker, or likely to improve conversion. Those outcomes will not appear.\n\n### Contradictions and caveats\n\n- Reviewers explicitly rejected \u201cfaster checkout\u201d language because the PR contains no performance measurements. The video will not state or imply a speed benefit.\n- The fixture lists three approved screenshots and an Acme logo but does not embed them. Production must verify access after approval.\n\n## Content boundaries\n\n### Include\n\n- Before/after presentation of three pages becoming one guided flow.\n- Review, payment, and confirmation steps.\n- Reuse of the existing payment form and mutation as a neutral scope fact.\n- Unchanged pricing, permissions, invoices, and payment processing.\n- Existing feature flag and the context-specified internal-to-10% rollout.\n- The context-specified discussion about adoption and rollout confidence.\n\n### Exclude\n\n- Any unprovided motivation, benefit, tradeoff, risk assessment, or outcome prediction.\n- Faster-checkout, conversion, support-volume, usability, or efficiency claims.\n- Implementation-file walkthroughs and invented rollout thresholds.\n\n## Renderer decision\n\n### Required visual primitives\n\n- Arrange approved before/after screenshots into editorial comparisons.\n- Reveal the three flow steps as short, sequential callouts.\n- Present unchanged scope and rollout stages as readable cards.\n- Use the supplied horizontal logo without changing its proportions.\n\n### Evidence for Remotion\n\nThe planned explanation depends on screenshots, UI comparison, stakeholder-oriented text, and a rollout timeline. These are editorial composition tasks across discrete scenes, which favor Remotion.\n\n### Why the alternative is weaker\n\nManim is strongest when viewers must track persistent conceptual objects as their state or relationships change. This plan does not require such a model; abstracting the supplied UI into one would be less direct than showing the approved screenshots.\n\n### Dependencies and risks\n\n- Confirm that all three screenshots are final and approved, including any mobile image affected by the spacing correction.\n- Preserve the logo aspect ratio. Do not infer colors, fonts, variants, or clear-space rules.\n- Remotion, Node.js, and an MP4 encoder are production dependencies after approval only.\n\n## Timed narrative\n\n| Time | Narrative purpose | Narration | On-screen content | Provenance |\n|---|---|---|---|---|\n| 0:00\u20130:12 | Establish current and changed structure | \u201cThis update replaces three separate billing settings pages with one guided flow.\u201d | Three approved before views compress into one after-flow frame | Context-supported claim: PR description; implementation fact: final diff summary |\n| 0:12\u20130:29 | Show implemented sequence | \u201cWithin that flow, users review the current plan, update payment details, and confirm the change.\u201d | Review \u2192 Payment \u2192 Confirmation, paired with approved screenshots | Context-supported claim: PR description; implementation fact: `BillingFlow` steps |\n| 0:29\u20130:44 | Define implementation boundary | \u201cThe flow reuses the existing payment form and server mutation. Payment processing itself does not change.\u201d | Guided flow above a stable \u201cExisting form + mutation\u201d layer | Implementation facts: final diff summary |\n| 0:44\u20130:57 | Preserve non-change qualifiers | \u201cPricing, permissions, and invoices are also unchanged. The PR makes no measured speed claim.\u201d | Four \u201cunchanged\u201d cards; \u201cNo measured speed claim\u201d | Implementation facts: final diff summary; context-supported caveat: review discussion |\n| 0:57\u20131:12 | Present planned rollout | \u201cThe existing feature flag supports internal enablement first, followed by ten percent of eligible workspaces.\u201d | `billing_flow_v2`; Internal \u2192 10% eligible workspaces | Context-supported claims: review discussion and rollout notes |\n| 1:12\u20131:25 | Enable the requested discussion | \u201cThe follow-up is about adoption and rollout confidence: what should entry, completion, cancellation, and success show before expansion?\u201d | Four analytics signals surround \u201cWhat earns expansion?\u201d | Implementation facts: analytics events; context-supported framing: rollout notes |\n\nTotal: **85 seconds**.\n\n## Storyboard\n\n### Scene 1: Three pages to one flow\n\n- **Duration:** 12 seconds\n- **Purpose:** State the structural product change.\n- **Visual state and motion:** Three approved before screenshots appear as separate panels, then resolve into the approved guided-flow view.\n- **On-screen text:** \u201cThree pages \u2192 one guided flow\u201d\n- **Provenance:** Context-supported claim from the PR description; implementation fact from the final diff summary.\n- **Transition:** The after view expands and its three steps become selectable callouts.\n\n### Scene 2: The guided sequence\n\n- **Duration:** 17 seconds\n- **Purpose:** Show the implemented user-facing steps.\n- **Visual state and motion:** Review, Payment, and Confirmation highlight in order over the approved screenshots.\n- **On-screen text:** \u201cReview \u00b7 Payment \u00b7 Confirmation\u201d\n- **Provenance:** Implementation fact from the final diff summary; detailed user journey from the PR description.\n- **Transition:** The screenshot shifts upward to reveal its stable implementation layer.\n\n### Scene 3: Existing payment path\n\n- **Duration:** 15 seconds\n- **Purpose:** Define what changed without attributing a benefit or rationale.\n- **Visual state and motion:** The new flow remains above a stationary \u201cExisting payment form + server mutation\u201d bar.\n- **On-screen text:** \u201cPayment processing unchanged\u201d\n- **Provenance:** Implementation facts from the final diff summary.\n- **Transition:** Neutral non-change cards replace the implementation layer.\n\n### Scene 4: Explicit boundaries\n\n- **Duration:** 13 seconds\n- **Purpose:** Retain material qualifiers from the evidence.\n- **Visual state and motion:** Pricing, permissions, invoices, and processing receive \u201cunchanged\u201d markers. A separate caveat appears for speed.\n- **On-screen text:** \u201cNo measured speed claim\u201d\n- **Provenance:** Implementation facts from final diff summary; context-supported caveat from review discussion.\n- **Transition:** Cards resolve into the existing feature flag and a two-stage line.\n\n### Scene 5: Staged exposure\n\n- **Duration:** 15 seconds\n- **Purpose:** Present the supplied rollout sequence without inventing later stages.\n- **Visual state and motion:** `billing_flow_v2` opens first to Internal, then advances to 10% of eligible workspaces.\n- **On-screen text:** \u201cInternal first\u201d / \u201cThen 10%\u201d\n- **Provenance:** Context-supported claims from review discussion and rollout notes.\n- **Transition:** Analytics labels gather around the 10% milestone.\n\n### Scene 6: Leadership discussion\n\n- **Duration:** 13 seconds\n- **Purpose:** Prepare the requested follow-up, not resolve it.\n- **Visual state and motion:** Entry, completion, cancellation, and success become four evidence cards around a question mark.\n- **On-screen text:** \u201cWhat evidence earns expansion?\u201d\n- **Provenance:** Analytics labels are implementation facts; adoption and rollout-confidence framing comes from rollout notes.\n- **Transition:** Close on the Acme horizontal logo with its aspect ratio preserved.\n\n## Narration script\n\n**0:00\u20130:12** \u2014 This update replaces three separate billing settings pages with one guided flow.\n\n**0:12\u20130:29** \u2014 Within that flow, users review the current plan, update payment details, and confirm the change.\n\n**0:29\u20130:44** \u2014 The flow reuses the existing payment form and server mutation. Payment processing itself does not change.\n\n**0:44\u20130:57** \u2014 Pricing, permissions, and invoices are also unchanged. The PR makes no measured speed claim.\n\n**0:57\u20131:12** \u2014 The existing feature flag supports internal enablement first, followed by ten percent of eligible workspaces.\n\n**1:12\u20131:25** \u2014 The follow-up is about adoption and rollout confidence: what should entry, completion, cancellation, and success show before expansion?\n\n## Caption plan\n\n- Use the approved narration verbatim, divided at natural phrase boundaries.\n- Keep each cue to one or two short lines and inside its scene interval.\n- Keep captions clear of screenshot controls and the logo area.\n- Do not synthesize a voice track.\n\n## Visual system and branding\n\n- Use the three approved screenshots as the primary visual evidence.\n- Use the supplied Acme horizontal logo on the closing frame and preserve its aspect ratio.\n- No other brand specification is supplied. Use a restrained neutral composition with legible, high-contrast text, but do not claim its colors or type are Acme brand rules.\n- Do not invent logo variants, brand fonts, colors, or spacing requirements.\n\n## Approval checklist\n\n- [ ] Executive preset and all fine-tuning assumptions\n- [ ] Implementation facts and context-supported takeaway\n- [ ] Content exclusions, narrative gaps, and speed caveat\n- [ ] Remotion renderer decision\n- [ ] Storyboard, narration, and captions\n- [ ] 85-second duration\n- [ ] Screenshot and logo treatment\n\n**Approval gate:** Please approve this packet or request planning changes. No animation source, captions file, production project, or rendered video will be created before approval.\n"}], "grading": {"expectations": [{"text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.", "passed": true, "evidence": "The output explicitly selects the Executive preset and exposes editable assumed viewer knowledge, primary takeaway, technical depth, terminology, emphasis, exclusions, tone, and discussion fields. It separates implementation facts from narrative claims, traces the leadership focus to the rollout notes, traces the three-page-to-flow framing to the PR description, and explicitly excludes any unprovided motivation, benefit, tradeoff, risk assessment, or outcome prediction. The only impact framing used is the supplied rollout discussion; no code-derived business or user benefit is asserted."}, {"text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.", "passed": true, "evidence": "It recommends Remotion because the plan uses the supplied screenshots, UI comparison, stakeholder-oriented text, and a rollout timeline, calling these editorial composition tasks. It also explains why a persistent conceptual model for Manim is unnecessary."}, {"text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.", "passed": true, "evidence": "The target and timed narrative total 85 seconds. The visual-system section uses the supplied screenshots and horizontal Acme logo, preserves the logo aspect ratio, and explicitly declines to invent logo variants, brand fonts, colors, spacing requirements, or other brand specifications."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "The output ends with an explicit approval gate stating that no animation source, captions file, production project, or rendered video will be created before approval. The run contains only outputs/output.md."}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}, "claims": [{"claim": "The PR replaces three separate billing settings pages with one guided flow.", "type": "factual", "verified": true, "evidence": "The fixture PR description states this directly."}, {"claim": "The flow reuses the existing payment form and server mutation, and does not change pricing, permissions, invoices, or payment processing.", "type": "factual", "verified": true, "evidence": "Each point appears verbatim in the fixture's final diff summary."}, {"claim": "Leadership should discuss adoption and rollout confidence after an internal-first, ten-percent rollout.", "type": "factual", "verified": true, "evidence": "The fixture rollout notes directly specify internal enablement, then ten percent of eligible workspaces, and say the video should prepare leadership to discuss adoption and rollout confidence."}, {"claim": "The PR makes no measured speed claim.", "type": "factual", "verified": true, "evidence": "The fixture review discussion says reviewers rejected faster-checkout language because the PR includes no performance measurements."}], "user_notes_summary": {"uncertainties": ["The fixture names but does not embed the three screenshots and logo, so production access must be verified after approval."], "needs_review": ["The user must approve or revise the audience assumptions, narrative, renderer, timing, and asset treatment."], "workarounds": []}, "eval_feedback": {"suggestions": [], "overall": "The revised provenance assertion is meaningfully discriminating and the output satisfies it by separating code facts from user-provided narrative context and explicitly excluding unsupported framing."}}}, {"id": "eval-2-billing-flow-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "output.md", "type": "text", "content": "# Executive update plan: Guided billing flow\n\n## Recommendation\n\nCreate an **80-second Remotion video** for executives. Lead with the visible shift from three settings pages to a single guided flow, then establish what remains unchanged and finish with the staged-rollout discussion.\n\nRemotion fits because the available material is visual and editorial: approved screenshots, before/after UI comparisons, concise scope cards, a rollout timeline, and a logo. Manim would add little because the explanation does not depend on a continuously transforming technical model.\n\n## Editable audience settings\n\n- **Knowledge:** Executives know the product and feature flags, but not the billing implementation.\n- **Takeaway:** The PR changes the billing-settings journey without changing prices or payment processing; the accompanying rollout notes ask leadership to focus next on adoption and rollout confidence.\n- **Depth:** Product outcome and rollout only, plus one sentence defining reuse of the current payment form and mutation.\n- **Emphasis:** Guided steps, explicit non-changes, and staged exposure.\n- **Exclusions:** Source files, event schemas, claims of faster checkout, and outcomes not stated in the supplied material.\n- **Tone:** Brief, factual, and measured.\n- **Discussion prompt:** What evidence should support expansion after the initial 10% cohort?\n\nThese are recommendations and can be changed before production.\n\n## Source boundaries\n\nThe final diff says the implementation adds review, payment, and confirmation steps, reuses the payment form and server mutation, adds four classes of analytics events, and does not alter pricing, permissions, invoices, or payment processing.\n\nThe PR description supplies the framing that three separate pages become a flow users need not leave. The review and rollout notes supply the feature-flag sequence, internal-first rollout, 10% cohort, and requested leadership focus on adoption and rollout confidence. None of those sources claim improved speed or business outcomes. The video will therefore make no such claim.\n\n## Proposed timeline\n\n| Time | Visual | Narration | Support |\n|---|---|---|---|\n| 0:00\u20130:12 | Three before screenshots resolve into the new flow | \u201cThis update replaces three separate billing settings pages with one guided flow.\u201d | PR description and diff summary |\n| 0:12\u20130:28 | Review, Payment, Confirmation highlight in sequence | \u201cUsers can review the plan, update payment details, and confirm without leaving the flow.\u201d | PR description and diff summary |\n| 0:28\u20130:43 | New UI above a stable existing-form layer | \u201cThe existing payment form and server mutation remain in use, and payment processing does not change.\u201d | Diff summary |\n| 0:43\u20130:55 | Unchanged-scope cards and speed caveat | \u201cPricing, permissions, and invoices are unchanged. There is no measured speed claim.\u201d | Diff summary and review discussion |\n| 0:55\u20131:09 | Internal \u2192 10% eligible workspaces | \u201cRollout remains behind the existing flag: internal first, then ten percent of eligible workspaces.\u201d | Review discussion and rollout notes |\n| 1:09\u20131:20 | Four analytics labels and closing question | \u201cWhat should these signals show before the rollout expands?\u201d | Diff summary and rollout notes |\n\n## Visual and brand treatment\n\n- Use all relevant approved screenshots as the main evidence rather than recreating the interface.\n- Use the Acme horizontal logo sparingly and preserve its aspect ratio.\n- No broader brand guide was provided, so use a neutral, high-contrast layout and do not invent Acme colors, fonts, spacing standards, or logo variants.\n- Time captions to the narration above. Do not assume synthesized narration.\n\n## Approval requested\n\nPlease approve or revise the audience assumptions, takeaway, Remotion choice, timeline, narration, exclusions, closing question, and asset treatment. No animation source or render will be created until approval.\n"}], "grading": {"expectations": [{"text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.", "passed": true, "evidence": "The output provides editable Knowledge, Takeaway, Depth, Emphasis, Exclusions, Tone, and Discussion prompt fields for an executive update. Its source-boundaries section directly assigns the page-consolidation framing to the PR description and the rollout/adoption framing to review and rollout notes. It makes no inferred motivation, tradeoff, customer benefit, risk reduction, or business-outcome claim, and explicitly excludes outcomes not stated in the supplied material."}, {"text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.", "passed": true, "evidence": "It explicitly recommends Remotion because the available material consists of approved screenshots, before/after UI comparisons, scope cards, a rollout timeline, and a logo, and describes that treatment as visual and editorial."}, {"text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.", "passed": true, "evidence": "The recommendation and proposed timeline target 80 seconds. The brand section uses the supplied Acme horizontal logo, preserves its aspect ratio, and explicitly refuses to invent Acme colors, fonts, spacing standards, or logo variants."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "The final sentence states that no animation source or render will be created until approval. The run contains only outputs/output.md."}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}, "claims": [{"claim": "Three separate billing settings pages become one guided flow.", "type": "factual", "verified": true, "evidence": "This is directly stated in the fixture PR description."}, {"claim": "The implementation reuses the payment form and server mutation and leaves pricing and payment processing unchanged.", "type": "factual", "verified": true, "evidence": "The fixture's final diff summary directly supports these claims and also lists permissions and invoices as unchanged."}, {"claim": "The rollout is internal first and then ten percent of eligible workspaces, with leadership focused on adoption and rollout confidence.", "type": "factual", "verified": true, "evidence": "The fixture rollout notes state all parts of this framing directly."}, {"claim": "No improved-speed or business-outcome claim is supported.", "type": "quality", "verified": true, "evidence": "The fixture explicitly rejects faster-checkout language for lack of measurement and provides no business-outcome claim; the output correctly avoids both."}], "user_notes_summary": {"uncertainties": [], "needs_review": ["The user must approve or revise the audience assumptions, takeaway, renderer, timeline, narration, exclusions, closing question, and asset treatment."], "workarounds": []}, "eval_feedback": {"suggestions": [], "overall": "The updated assertions test the critical provenance boundary. This baseline also passes because it carefully attributes narrative framing to the supplied PR description and rollout notes rather than deriving it from implementation details."}}}, {"id": "eval-3-leader-failover-with_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "output.md", "type": "text", "content": "# Video plan: Add lease-based leader failover\n\nStatus: **Awaiting user approval. No animation source or render has been created.**\n\n## Recommendation summary\n\n- **Audience preset:** TPM\n- **Fine-tuning (recommended and editable):** Assume viewers know the leader/follower model but not this implementation. Use moderate technical depth. Define lease expiry, quorum, and fencing through animation. Emphasize boundaries, dependencies, rollout order, observable interruption, and the next recovery slice. Exclude file-level details and any seamless-recovery claim. Use a direct, qualification-preserving tone.\n- **Renderer:** Manim\n- **Target duration:** 90 seconds\n- **Primary takeaway:** This PR implements election after lease expiry and stale-writer fencing. It does not reconstruct in-flight operations or guarantee zero downtime or transparent recovery.\n- **Follow-up conversation this enables:** The TPM explicitly asks the team to clarify dependencies, observable interruption, rollout order, and the next recovery slice.\n\nAll settings above are recommendations. The user can revise them before approval.\n\n## Evidence and confidence\n\n### Implementation facts from the PR\n\n| ID | Fact | Source |\n|---|---|---|\n| I1 | Runtime converts an elapsed lease deadline into a queued `LeaseExpired` event. | Final diff summary |\n| I2 | The protocol handles that event, requests votes, and becomes leader after quorum. | Final diff summary |\n| I3 | Leadership terms have monotonically increasing fencing tokens. | Final diff summary |\n| I4 | Storage rejects writes with stale tokens. | Final diff summary |\n| I5 | The PR does not reconstruct work in flight on the previous leader. | Final diff summary |\n| I6 | The PR does not guarantee zero downtime or transparent recovery. | Final diff summary |\n\n### Narrative claims from user-provided context\n\n| ID | Attributed claim | Source and treatment |\n|---|---|---|\n| C1 | The implementer expects failover to be automatic and unnoticeable to callers. | Standup transcript. Present only as an implementer expectation that conflicts with I5\u2013I6; do not present as behavior. |\n| C2 | The TPM wants discussion of dependencies, observable interruption, rollout order, and the next recovery slice. | Standup transcript. This supplies the video's TPM framing and closing questions. |\n| C3 | Election and stale-writer fencing are covered; in-flight recovery is out of scope; \u201cseamless failover\u201d should be avoided. | Final review. This supports the qualification and terminology. |\n\n### Missing narrative context and questions\n\n- The context asks about dependencies and rollout order but does not identify a required order or name dependencies beyond the storage adapter visible in the implementation. The video will ask these as discussion questions, not prescribe answers.\n- The context does not quantify interruption duration or define the next recovery slice. The video will not invent either.\n\n### Contradictions and caveats\n\nThe implementer's \u201ccallers won't notice\u201d expectation conflicts with the implemented scope and final review. The plan therefore rejects \u201cseamless,\u201d \u201ctransparent,\u201d and \u201czero-downtime\u201d claims. The PR remains authoritative for behavior; the transcript and review supply the team's framing, concerns, and terminology.\n\n## Content boundaries\n\n### Include\n\n- Runtime-to-protocol boundary: elapsed deadline becomes a queued event. [I1]\n- Election sequence: event, vote requests, quorum, new leader. [I2]\n- Storage boundary: monotonically increasing tokens and stale-token rejection. [I3\u2013I4]\n- Explicit absence of in-flight reconstruction and transparent-recovery guarantees. [I5\u2013I6, C3]\n- TPM-requested discussion points: dependencies, interruption, rollout order, next recovery slice. [C2]\n\n### Exclude\n\n- Claims that failover is seamless, transparent, zero-downtime, or unnoticeable.\n- A recovery-time estimate or interruption bound.\n- A prescribed rollout order or unnamed dependency.\n- Claims that interrupted work resumes or is reconstructed.\n- Inferred motivation, benefits, safety evaluation, or tradeoffs not stated in the supplied context.\n\n## Renderer decision\n\n### Required visual primitives\n\nThe plan needs persistent leader, follower, lease, event queue, vote, fencing-token, and storage objects. Their identities must remain stable while states and relationships change across the implemented sequence. [I1\u2013I4]\n\n### Evidence for the selected renderer\n\nManim fits the neutral mechanism established by the PR: a lease expires, an event moves through a boundary, votes accumulate to quorum, leadership changes, and storage compares tokens. Continuous transformations let viewers track those objects without adding an unsupported argument about the design. [I1\u2013I4]\n\n### Why the alternative is weaker\n\nRemotion is strong for composing cards, screenshots, and mixed media on a timeline. This plan instead depends on persistent objects changing state. Cuts between editorial cards would make term identity and the event-to-election-to-token sequence harder to track.\n\n### Dependencies and risks\n\nProduction requires Manim and its rendering dependencies. Visuals must not imply an interruption duration, a guaranteed rollout sequence, or automatic transfer of in-flight work. No hybrid renderer is proposed.\n\n## Timed narrative\n\n| Time | Narrative purpose | Narration | On-screen content | Provenance |\n|---|---|---|---|---|\n| 0\u201312s | Establish implemented scope and qualification | \u201cThis PR adds lease-based leader replacement and stale-writer fencing. It does not guarantee transparent or zero-downtime recovery.\u201d | Title; \u201cElection + fencing\u201d; \u201cNot transparent recovery\u201d | Implementation facts I2\u2013I6; context claim C3 |\n| 12\u201329s | Show the runtime/protocol boundary | \u201cWhen a leader lease deadline passes, the runtime queues a `LeaseExpired` event for the protocol state machine.\u201d | Runtime \u2192 queue \u2192 protocol | Implementation fact I1 |\n| 29\u201347s | Show election | \u201cThe protocol handles the event, requests votes, and makes the follower leader after quorum.\u201d | Follower \u2192 candidate; vote markers; quorum \u2192 leader | Implementation fact I2 |\n| 47\u201364s | Show fencing mechanism | \u201cEach leadership term has a higher fencing token. The storage adapter rejects writes that carry a stale token.\u201d | Term 8 \u2192 9; storage rejects token 8 | Implementation facts I3\u2013I4 |\n| 64\u201378s | Preserve the recovery boundary | \u201cWork that was in flight on the previous leader is not reconstructed. The PR makes no zero-downtime or transparent-recovery guarantee.\u201d | In-flight work remains with old leader; explicit scope boundary | Implementation facts I5\u2013I6; context claim C3 |\n| 78\u201390s | Enable the requested TPM discussion | \u201cThe follow-up discussion is about dependencies, the observable interruption, rollout order, and what the next recovery slice must cover.\u201d | Four question cards; no proposed answers | Context claim C2 |\n\n## Storyboard\n\n### Scene 1: Implemented scope\n\n- **Duration:** 12 seconds\n- **Purpose:** State what the PR implements and prevent the unsupported seamless-recovery interpretation.\n- **Visual state and motion:** A leader and follower appear. Two scoped labels attach: \u201celection\u201d and \u201cfencing.\u201d A separate \u201ctransparent recovery\u201d label remains outside the scope boundary.\n- **On-screen text:** \u201cLease-based failover\u201d; \u201cElection + fencing\u201d; \u201cNot transparent recovery\u201d\n- **Provenance type and evidence references:** Implementation facts I2\u2013I6; context claim C3\n- **Transition:** Track to the leader's lease indicator.\n\n### Scene 2: Deadline becomes a queued event\n\n- **Duration:** 17 seconds\n- **Purpose:** Explain the runtime/protocol boundary.\n- **Visual state and motion:** The lease indicator reaches its deadline. Runtime creates a `LeaseExpired` event and places it in a queue; protocol consumes it.\n- **On-screen text:** \u201cRuntime\u201d; \u201cLeaseExpired\u201d; \u201cProtocol\u201d\n- **Provenance type and evidence references:** Implementation fact I1\n- **Transition:** The event transforms into the candidate state.\n\n### Scene 3: Quorum changes leadership\n\n- **Duration:** 18 seconds\n- **Purpose:** Explain the election sequence at TPM depth.\n- **Visual state and motion:** Follower becomes candidate, vote markers accumulate, and the candidate becomes leader after quorum.\n- **On-screen text:** \u201cRequest votes\u201d; \u201cQuorum\u201d; \u201cLeader\u201d\n- **Provenance type and evidence references:** Implementation fact I2\n- **Transition:** The new leadership term badge expands into a token.\n\n### Scene 4: Storage rejects the stale term\n\n- **Duration:** 17 seconds\n- **Purpose:** Show the implemented storage boundary.\n- **Visual state and motion:** The new leader holds token 9. A write with token 9 reaches storage; a write carrying token 8 is rejected as stale.\n- **On-screen text:** \u201cTerm token 9\u201d; \u201cToken 8: stale \u2192 rejected\u201d\n- **Provenance type and evidence references:** Implementation facts I3\u2013I4\n- **Transition:** The old leader and its in-flight item remain visible as the storage path recedes.\n\n### Scene 5: Recovery remains out of scope\n\n- **Duration:** 14 seconds\n- **Purpose:** Preserve the implementation limitation and final-review wording.\n- **Visual state and motion:** An in-flight item remains attached to the previous leader; it does not transfer to the new leader. No timing scale is shown.\n- **On-screen text:** \u201cIn-flight work: not reconstructed\u201d; \u201cNo transparent-recovery guarantee\u201d\n- **Provenance type and evidence references:** Implementation facts I5\u2013I6; context claim C3\n- **Transition:** System diagram reduces into a neutral background for discussion prompts.\n\n### Scene 6: TPM follow-up\n\n- **Duration:** 12 seconds\n- **Purpose:** Present the exact discussion areas requested by the TPM without supplying unsupported answers.\n- **Visual state and motion:** Four question cards appear in sequence.\n- **On-screen text:** \u201cDependencies?\u201d; \u201cObservable interruption?\u201d; \u201cRollout order?\u201d; \u201cNext recovery slice?\u201d\n- **Provenance type and evidence references:** Context claim C2\n- **Transition:** Hold final frame for the creator discussion.\n\n## Narration script\n\n**0:00\u20130:12** \u2014 This PR adds lease-based leader replacement and stale-writer fencing. It does not guarantee transparent or zero-downtime recovery.\n\n**0:12\u20130:29** \u2014 When a leader lease deadline passes, the runtime queues a `LeaseExpired` event for the protocol state machine.\n\n**0:29\u20130:47** \u2014 The protocol handles the event, requests votes, and makes the follower leader after quorum.\n\n**0:47\u20131:04** \u2014 Each leadership term has a higher fencing token. The storage adapter rejects writes that carry a stale token.\n\n**1:04\u20131:18** \u2014 Work that was in flight on the previous leader is not reconstructed. The PR makes no zero-downtime or transparent-recovery guarantee.\n\n**1:18\u20131:30** \u2014 The follow-up discussion is about dependencies, the observable interruption, rollout order, and what the next recovery slice must cover.\n\n## Caption plan\n\nUse the approved narration verbatim. Split cues at sentence or natural-clause boundaries, keep each cue within its scene, and use no more than two short lines. Preserve the exact qualifiers \u201cdoes not guarantee,\u201d \u201cnot reconstructed,\u201d and \u201cmakes no ... guarantee.\u201d Produce captions but no synthesized narration audio.\n\n## Visual system and branding\n\nNo brand assets are included in the fixture. Use the fallback system: 16:9 at 1920\u00d71080, dark neutral background, off-white text, a cool accent for current protocol state, and a warm warning accent for expired/stale/out-of-scope states. Use a sans-serif face and monospace only for event and token labels. Preserve stable object identity throughout.\n\n## Approval checklist\n\n- [ ] Audience and fine-tuning\n- [ ] Message and takeaway\n- [ ] Content boundaries\n- [ ] Renderer\n- [ ] Storyboard and narration\n- [ ] Duration (90 seconds)\n- [ ] Brand treatment\n\n## Post-approval rendering and review correction protocol\n\n1. User approval freezes the message, audience, storyboard, narration, renderer, duration, visual direction, and claim provenance.\n2. The **coding/rendering agent owns every creation action**: it creates and edits animation source and assets, writes captions, runs all renders, produces the MP4, and maintains the production manifest. It cannot reinterpret the approved narrative.\n3. The **review agent owns verification only**. It inspects the actual MP4 and compares it with the frozen packet, evidence, source, captions, narration, and manifest. It never edits source or media and never runs a render.\n4. For a small implementation mismatch\u2014clipping, contrast, typo, caption timing, missing approved label, scene duration, or an incorrectly implemented transition\u2014the review agent sends a precise correction request to the existing coding/rendering agent. That agent edits and rerenders; the review agent verifies the new MP4.\n5. A change to message, audience, emphasis, technical depth, scene order, substantive claim, narration, renderer, duration, metaphor, visual direction, or unsupported analysis returns to the **user**. It cannot be handled inside the creation/verification loop.\n6. Delivery occurs only after the review agent verifies the latest MP4 and records a pass.\n"}], "grading": {"expectations": [{"text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.", "passed": true, "evidence": "The evidence ledger accurately limits I1-I6 to the fixture's PR description and final diff summary. It separately attributes the implementer's expectation, TPM discussion framing, and review qualification to C1-C3 from the standup and final review. It explicitly says the context does not establish rollout order, dependencies beyond visible storage, interruption duration, or the next recovery slice, and therefore asks rather than invents answers. The plan rejects seamless, transparent, zero-downtime, and unnoticeable recovery claims. Renderer-fit judgments concern video-production primitives, not inferred motivation, benefit, risk, or evaluation of the implementation."}, {"text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.", "passed": true, "evidence": "The editable TPM tuning calls for runtime/protocol/storage boundaries, dependencies, rollout order, observable interruption, and the next recovery slice. The plan preserves unknown rollout details as questions and ends with the four discussion areas stated verbatim by the TPM in the fixture."}, {"text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.", "passed": true, "evidence": "The plan identifies persistent leader, follower, lease, event queue, vote, token, and storage objects whose state and relationships change, recommends Manim for continuous transformations, and explains that Remotion's card-oriented composition would make identity and the event-to-election-to-token sequence harder to track."}, {"text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.", "passed": true, "evidence": "Protocol steps 2-3 assign source, asset, caption, manifest, edit, and render work exclusively to the coding/rendering agent, while the review agent only inspects and compares artifacts and is explicitly prohibited from editing or rendering."}, {"text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.", "passed": true, "evidence": "Protocol step 4 sends clipping, contrast, typo, caption timing, missing-label, scene-duration, and transition corrections to the coding/rendering agent. Step 5 sends message, audience, emphasis, depth, order, claims, narration, renderer, duration, metaphor, visual direction, and unsupported-analysis changes to the user."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "execution_metrics": {"output_chars": 13306, "transcript_chars": 0}, "claims": [{"claim": "The PR queues LeaseExpired after an elapsed lease deadline, elects a leader after quorum, uses increasing fencing tokens, and rejects stale-token writes.", "type": "factual", "verified": true, "evidence": "These claims match the fixture's final diff summary exactly."}, {"claim": "The PR does not reconstruct in-flight work or guarantee zero downtime or transparent recovery.", "type": "factual", "verified": true, "evidence": "These limits appear verbatim in the fixture's final diff summary and are reinforced by the final reviewer."}, {"claim": "The TPM wants dependencies, observable interruption, rollout order, and the next recovery slice discussed.", "type": "factual", "verified": true, "evidence": "The fixture's TPM standup statement names those four topics."}, {"claim": "No animation source or render has been created.", "type": "process", "verified": true, "evidence": "Only outputs/output.md exists for the run, and its status states that no animation source or render has been created pending approval."}], "user_notes_summary": {"uncertainties": ["The supplied context does not prescribe rollout order, quantify interruption, identify dependencies beyond the storage adapter, or define the next recovery slice."], "needs_review": ["User approval is required for the audience tuning, message, boundaries, renderer, storyboard, narration, duration, and branding before production."], "workarounds": []}, "eval_feedback": {"suggestions": [{"reason": "The prompt explicitly requires stopping for approval, but no assertion checks that no production artifacts were created before approval. Add a separate approval-gate assertion."}], "overall": "The revised provenance assertion is meaningful and verifiable against the fixture. The remaining clear gap is an explicit approval-gate check."}}}, {"id": "eval-3-leader-failover-without_skill-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "output.md", "type": "text", "content": "# Approval draft: Leader failover changelog video\n\nNo source code or video has been produced. This draft stops for approval.\n\n## Proposed treatment\n\n- **Audience:** TPM\n- **Duration:** 90 seconds\n- **Renderer:** Manim\n- **Goal:** Give the team a shared picture of the implementation boundary, then frame the open coordination conversation about dependencies, interruption, rollout order, and later recovery work.\n\nThe PR establishes implemented behavior: lease deadlines become queued events; quorum can produce a new leader; increasing fencing tokens let storage reject stale writes; and in-flight work is not reconstructed. The standup and review provide the team's discussion framing. The implementer's expectation that callers will not notice conflicts with the PR and the reviewer's warning, so the video will not call recovery seamless or transparent.\n\n## Audience assumptions\n\nAssume viewers understand the leader/follower model but do not need code-level detail. Define the runtime, protocol, and storage boundaries visually. Emphasize sequencing questions and scope limits. Use neutral language where the context provides no answer: the materials do not prescribe rollout order, quantify interruption, or define the next recovery slice.\n\n## Why Manim\n\nThe clearest explanation tracks the same leader, follower, lease, queue, votes, tokens, and storage component as their states change. Manim can preserve those identities across the event and election sequence. Remotion would be suitable for cards, screenshots, or a release timeline, but cuts between those elements would make this evolving protocol mechanism less direct.\n\n## Evidence boundary\n\nImplementation facts from the PR:\n\n- Runtime queues `LeaseExpired` after the deadline.\n- Protocol requests votes and becomes leader after quorum.\n- Terms use monotonically increasing fencing tokens.\n- Storage rejects stale-token writes.\n- In-flight work is not reconstructed.\n- Zero downtime and transparent recovery are not guaranteed.\n\nContext-supported framing:\n\n- The TPM wants dependencies, observable interruption, rollout order, and the next recovery slice discussed.\n- The final reviewer says election and fencing are covered, in-flight recovery is out of scope, and \u201cseamless\u201d should be avoided.\n- The implementer's \u201ccallers won't notice\u201d statement is an expectation, not an implementation fact, and conflicts with the other evidence.\n\n## Timed storyboard\n\n| Time | Visual and narration | Source |\n|---|---|---|\n| 0:00\u20130:12 | Stable leader/follower diagram. Leader disappears. \u201cThis PR adds leader election and stale-writer fencing. It does not guarantee transparent or zero-downtime recovery.\u201d | PR implementation facts; final review wording |\n| 0:12\u20130:29 | Lease expires; runtime places `LeaseExpired` in a queue. \u201cAn elapsed lease deadline becomes a queued event for the protocol.\u201d | PR implementation fact |\n| 0:29\u20130:47 | Follower becomes candidate; votes accumulate; quorum changes it to leader. \u201cThe protocol requests votes and makes the follower leader after quorum.\u201d | PR implementation fact |\n| 0:47\u20131:04 | Token 11 replaces token 10; storage rejects a token-10 write. \u201cEach term has a higher fencing token, and storage rejects stale-token writes.\u201d | PR implementation facts |\n| 1:04\u20131:18 | In-flight work remains attached to the old leader. \u201cThe PR does not reconstruct work in flight on the previous leader.\u201d | PR implementation fact; final review |\n| 1:18\u20131:30 | Four question cards appear. \u201cThe follow-up is about dependencies, observable interruption, rollout order, and what the next recovery slice covers.\u201d | TPM standup statement |\n\nNo visual will imply a recovery-time bound, automatic in-flight transfer, or a prescribed rollout sequence.\n\n## Caption and visual plan\n\nCaptions will use the narration exactly and remain synchronized to the six scene windows. There will be no generated voice track. Use a dark 16:9 diagram system, off-white labels, blue for the current leader/token, and amber for expiry, stale writes, and out-of-scope recovery. If approved branding is provided, adapt this system to it.\n\n## Approval requested\n\nPlease approve or revise the TPM assumptions, 90-second duration, Manim choice, explicit non-seamless qualification, storyboard, and discussion prompts.\n\n## Production and review after approval\n\nApproval freezes the narrative and creative choices. The coding/rendering agent alone creates and edits animation source, captions, and assets and runs every render. The review agent verifies the actual output against the approved plan; it does not edit or render.\n\nIf review finds a small mismatch such as clipping, missing approved text, incorrect caption timing, or scene timing drift, it sends a precise request to the coding/rendering agent, which edits and rerenders. If a proposed fix changes the audience, message, emphasis, story order, narration, renderer, duration, substantive claims, or visual concept, the question returns to the user. Review passes only after inspecting the corrected render.\n"}], "grading": {"expectations": [{"text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.", "passed": true, "evidence": "The evidence-boundary section accurately separates all six implementation facts from the PR and all communication framing from the standup and final review. The output treats the implementer's unnoticeable-failover statement as a conflicting expectation, rejects seamless and transparent recovery, and explicitly declines to prescribe rollout order, quantify interruption, or define the next recovery slice. Its Manim-versus-Remotion judgment is a video-production decision based on visual primitives, not an evaluative claim about the implementation."}, {"text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.", "passed": true, "evidence": "The goal targets TPM rollout coordination, the audience assumptions call for runtime/protocol/storage boundaries and sequencing questions, and the closing scene repeats the fixture-supported topics of dependencies, observable interruption, rollout order, and the next recovery slice without inventing answers."}, {"text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.", "passed": true, "evidence": "The output recommends Manim because the same leader, follower, lease, queue, votes, tokens, and storage component change state. It contrasts Remotion's cards, screenshots, and release-timeline strengths and explains why cuts would make the evolving mechanism less direct."}, {"text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.", "passed": true, "evidence": "The production section says the coding/rendering agent alone creates and edits animation source, captions, and assets and runs every render; the review agent verifies the actual output and does not edit or render."}, {"text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.", "passed": true, "evidence": "Small clipping, missing-text, caption-timing, and scene-timing discrepancies go to the coding/rendering agent for edit and rerender. Changes to audience, message, emphasis, story order, narration, renderer, duration, claims, or visual concept return to the user."}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "execution_metrics": {"output_chars": 5061, "transcript_chars": 0}, "claims": [{"claim": "The PR queues LeaseExpired after a deadline, elects after quorum, uses increasing fencing tokens, and rejects stale-token writes.", "type": "factual", "verified": true, "evidence": "These statements accurately reproduce the fixture's final diff summary."}, {"claim": "The PR does not reconstruct in-flight work or guarantee zero downtime or transparent recovery.", "type": "factual", "verified": true, "evidence": "These limitations are explicitly stated in the fixture's final diff summary and final review."}, {"claim": "The team discussion concerns dependencies, observable interruption, rollout order, and later recovery work.", "type": "factual", "verified": true, "evidence": "The TPM's fixture statement directly supplies all four discussion topics."}, {"claim": "No source code or video has been produced.", "type": "process", "verified": true, "evidence": "Only outputs/output.md exists for the run, and it explicitly says production has stopped for approval."}], "user_notes_summary": {"uncertainties": ["The materials do not prescribe rollout order, quantify interruption, or define the next recovery slice."], "needs_review": ["The user must approve or revise the TPM assumptions, duration, renderer, qualification, storyboard, and discussion prompts before production."], "workarounds": []}, "eval_feedback": {"suggestions": [{"reason": "The baseline also passes the strict provenance expectation, so the current set does not discriminate this run. Add an explicit approval-gate assertion and consider checking for beat-level provenance references if that traceability is an intended skill benefit."}], "overall": "All assertions are satisfied by this strong baseline. The provenance assertion is useful, but the eval would better expose skill value by testing traceability granularity and the approval stop."}}}], "previous_feedback": {}, "previous_outputs": {"eval-1-vector-reserve-with_skill-run-1": [{"name": "output.md", "type": "text", "content": "# Video plan: Avoid exact reserve during incremental append\n\nStatus: **Awaiting user approval.** No animation source has been created and no video has been rendered.\n\n## Recommendation summary\n\n- **Audience preset:** IC (recommended)\n- **Renderer:** Manim (recommended)\n- **Target duration:** 90 seconds\n- **Primary takeaway:** Calling `reserve_exact` before each small append defeated geometric growth and caused repeated allocation and copying. Removing that call lets `extend` use the vector's normal amortized-growth strategy.\n- **Follow-up conversation this enables:** Where else do callers override collection growth, and what benchmark or regression coverage should protect this behavior?\n\n### Editable audience assumptions\n\n- **Assumed viewer knowledge:** Familiar with vectors, heap allocation, length, capacity, and amortized complexity; not expected to know this code path.\n- **Technical depth:** Mechanism-first. Show allocation behavior rather than derive complexity formally.\n- **Terminology:** Use \u201cvector,\u201d \u201clength,\u201d \u201ccapacity,\u201d \u201cheap buffer,\u201d \u201creallocation,\u201d \u201ccopy,\u201d \u201cexact growth,\u201d and \u201cgeometric growth.\u201d Define capacity visually.\n- **Emphasis:** The persistent vector and how its backing buffer changes across repeated one-element batches.\n- **Exclusions:** Benchmark charts, allocator internals, source-file walkthrough, unrelated collection APIs, and claims about exact growth factors.\n- **Tone:** Precise, compact, and diagnostic rather than celebratory.\n- **Discussion prompt:** Should this path gain a performance regression test, and are there similar `reserve_exact` calls in incremental append paths?\n\nYou can edit any assumption above before approval.\n\n## Evidence and confidence\n\n### Verified implementation\n\n- **[E1, final diff]** The PR removes `items.reserve_exact(batch.len())` and leaves `items.extend(batch)` in place.\n- **[E2, final diff]** `extend` uses the iterator size hint and the vector's normal growth strategy.\n- **[E3, final diff]** The PR makes no public API change.\n- **[E4, final review]** The reviewer reports that repeated one-element batches previously forced exact growth and repeated copies, and that the change restores amortized growth. This corroborates the behavior visible in the final change.\n\n### Stated intent\n\n- **[E5, PR description]** The goal is to stop calling exact reserve before every bulk append and restore geometric growth.\n- **[E6, implementer notes]** The preferred explanation follows one persistent vector through length, capacity, heap buffers, reallocations, and copied elements.\n\n### Inferences\n\n- The performance benefit is greatest for repeated small batches because exact growth can repeatedly exhaust capacity. The fixture demonstrates one-element batches but provides no numeric speedup claim.\n- A single stable vector identity is the clearest visual anchor; its backing buffer may change while the vector itself persists.\n\n### Contradictions and caveats\n\n- **Contradicted early discussion:** The early statement that the allocator \u201cshould reuse the existing allocation\u201d and that the old call was \u201cprobably harmless\u201d conflicts with the final diff's rationale and the final review's benchmark-confirmed repeated copies. The final diff is authoritative; the video will not repeat the early claim as fact.\n- The fixture does not specify the vector's exact geometric growth factor, allocator behavior, benchmark values, language/runtime version, or platform. The animation will use illustrative capacity steps without presenting a specific factor as guaranteed behavior.\n- The final review supplies the benchmark conclusion, but this video will not become a benchmark report or invent measurements.\n\n## Content boundaries\n\n### Include\n\n- One persistent vector receiving repeated one-element batches.\n- Length and capacity as distinct values.\n- The old path: exact reserve, a just-big-enough buffer, reallocation, and copies on subsequent appends.\n- The new path: `extend` using normal growth, leaving spare capacity and amortizing future appends.\n- The two-line-to-one-line code change and \u201cno public API change.\u201d\n- A short follow-up prompt about regression coverage and similar call sites.\n\n### Exclude\n\n- Numeric benchmark results or an implied speedup percentage.\n- Claims about a guaranteed doubling factor.\n- Detailed allocator implementation, memory safety, or API behavior not present in the fixture.\n- A chronological tour of the PR discussion.\n\n## Renderer decision\n\n### Required visual primitives\n\n- A vector object that preserves identity while length and capacity update.\n- Backing heap buffers that are replaced while the viewer tracks the same vector.\n- Elements moving from an old buffer to a new one during reallocation.\n- Side-by-side or sequential comparison of exact versus geometric growth.\n\n### Evidence for Manim\n\nThe core explanation depends on persistent objects changing state and relationship over time: the vector's length and capacity evolve, its backing buffer is replaced, and existing elements are copied. Manim's object transformations and spatial continuity directly encode that mechanism. This choice follows the final review's repeated-copy finding and the implementer note's requested visual vocabulary.\n\n### Why Remotion is weaker here\n\nRemotion could compose code cards and before/after slides, but the audience would have to infer the repeated allocation cycle. The key teaching moment is continuous transformation of the same vector across appends, not editorial arrangement of mixed media.\n\n### Dependencies and risks\n\n- Requires a working Manim and FFmpeg environment for production.\n- Capacity steps must be labeled \u201cillustrative\u201d so the animation does not imply an undocumented growth factor.\n- Dense element-by-element copies can become visually noisy; use a small number of cells and a copy counter.\n\n## Timed narrative\n\n| Time | Narrative purpose | Narration | On-screen content |\n|---|---|---|---|\n| 0:00\u20130:10 | Establish failure mode | \u201cThis append path tried to avoid allocations by reserving exactly enough space before every batch. With repeated small batches, it did the opposite.\u201d | Persistent vector; repeated `+1` batches; title: \u201cExact reserve, repeated work\u201d |\n| 0:10\u20130:27 | Show old behavior | \u201cAfter each append, length catches capacity. The next exact reserve asks for one more slot, replaces the heap buffer, and copies the existing elements again.\u201d | Length/capacity counters; buffer replacement; elements copied; copy counter rises |\n| 0:27\u20130:40 | Make cost intuitive | \u201cAs the vector grows, each new element can trigger copying of everything already there. Across the sequence, that repeated work grows quadratically.\u201d | Copy arcs accumulate; concise label: \u201c1 + 2 + 3 + \u2026 copies\u201d |\n| 0:40\u20130:52 | Present code change | \u201cThe fix removes the explicit `reserve_exact` call. The append now goes directly through `extend`.\u201d | Diff: remove `reserve_exact`; retain `extend(batch)` |\n| 0:52\u20131:11 | Show new behavior | \u201c`extend` uses the iterator size hint and the vector's normal growth strategy. A reallocation can leave spare capacity, so later appends reuse the same buffer.\u201d | Same vector identity; larger illustrative buffer; several appends fill spare cells without moving prior elements |\n| 1:11\u20131:22 | State impact and scope | \u201cThat restores amortized growth for incremental batches. The public API does not change; the improvement is inside the append path.\u201d | Old/new copy counters; \u201cAmortized growth restored\u201d; \u201cNo public API change\u201d |\n| 1:22\u20131:30 | Enable discussion | \u201cThe follow-up question is where else exact reserve overrides collection growth\u2014and how we should guard this path against regression.\u201d | Two discussion prompts; end card |\n\nTotal: **90 seconds**.\n\n## Storyboard\n\n### Scene 1: The optimization that backfires\n\n- **Duration:** 10 seconds\n- **Purpose:** Frame the engineering problem without beginning with code trivia.\n- **Visual state and motion:** A stable `items` vector receives a queue of one-element batches. Length and capacity begin equal. Each incoming batch pulses a warning on \u201creserve exactly +1.\u201d\n- **On-screen text:** \u201cExact reserve, repeated work\u201d\n- **Evidence references:** E1, E4, E5\n- **Transition:** Camera moves from the vector handle to its heap-buffer pointer.\n\n### Scene 2: Reallocation loop\n\n- **Duration:** 17 seconds\n- **Purpose:** Explain why the old path repeats work.\n- **Visual state and motion:** Preserve the vector handle. Create a just-one-cell-larger buffer, animate existing cells copying across, switch the pointer, then repeat twice. Update length, capacity, and a copy counter.\n- **On-screen text:** \u201clength = capacity\u201d / \u201cnew buffer\u201d / \u201ccopy existing elements\u201d\n- **Evidence references:** E4, E6; capacity values explicitly labeled illustrative\n- **Transition:** Pull back to show the accumulated copy paths.\n\n### Scene 3: Cost accumulates\n\n- **Duration:** 13 seconds\n- **Purpose:** Connect repeated copies to quadratic work without turning this into a formal proof.\n- **Visual state and motion:** Stack copy counts from successive appends into `1 + 2 + 3 + \u2026`; the total grows faster than the element count.\n- **On-screen text:** \u201cRepeated incremental copies \u2192 quadratic total work\u201d\n- **Evidence references:** E4 and the task's verified failure description\n- **Transition:** Collapse the copy paths into the removed diff line.\n\n### Scene 4: The final diff\n\n- **Duration:** 12 seconds\n- **Purpose:** Show the exact implemented change.\n- **Visual state and motion:** Two-line snippet appears; `items.reserve_exact(batch.len())` turns red and exits; `items.extend(batch)` remains centered.\n- **On-screen text:** \u201cRemove exact reserve\u201d / \u201cKeep extend\u201d\n- **Evidence references:** E1, E2\n- **Transition:** The remaining `extend` call flows into the vector model.\n\n### Scene 5: Normal growth path\n\n- **Duration:** 19 seconds\n- **Purpose:** Contrast the new mechanism with the old loop.\n- **Visual state and motion:** One illustrative larger buffer replaces the full buffer and retains open cells. Several batches arrive; length advances while capacity remains stable and existing elements do not move.\n- **On-screen text:** \u201cSpare capacity\u201d / \u201cReuse the buffer\u201d / \u201cIllustrative capacity\u201d\n- **Evidence references:** E2, E4, E5\n- **Transition:** Old and new paths align for comparison.\n\n### Scene 6: Impact and boundary\n\n- **Duration:** 11 seconds\n- **Purpose:** State the verified result and prevent scope inflation.\n- **Visual state and motion:** Old copy counter continues rising; new path shows fewer reallocation events. Then both simplify into a result card.\n- **On-screen text:** \u201cAmortized growth restored\u201d / \u201cNo public API change\u201d\n- **Evidence references:** E3, E4\n- **Transition:** Result card slides upward to reveal the discussion prompt.\n\n### Scene 7: Follow-up\n\n- **Duration:** 8 seconds\n- **Purpose:** Prepare the IC audience for conversation with the creator.\n- **Visual state and motion:** Two questions appear one at a time; restrained end card.\n- **On-screen text:** \u201cOther exact-reserve call sites?\u201d / \u201cRegression coverage?\u201d\n- **Evidence references:** Clearly labeled planning recommendations, not implemented claims\n- **Transition:** Fade out.\n\n## Narration script\n\n**0:00\u20130:10**  \nThis append path tried to avoid allocations by reserving exactly enough space before every batch. With repeated small batches, it did the opposite.\n\n**0:10\u20130:27**  \nAfter each append, length catches capacity. The next exact reserve asks for one more slot, replaces the heap buffer, and copies the existing elements again.\n\n**0:27\u20130:40**  \nAs the vector grows, each new element can trigger copying of everything already there. Across the sequence, that repeated work grows quadratically.\n\n**0:40\u20130:52**  \nThe fix removes the explicit `reserve_exact` call. The append now goes directly through `extend`.\n\n**0:52\u20131:11**  \n`extend` uses the iterator size hint and the vector's normal growth strategy. A reallocation can leave spare capacity, so later appends reuse the same buffer.\n\n**1:11\u20131:22**  \nThat restores amortized growth for incremental batches. The public API does not change; the improvement is inside the append path.\n\n**1:22\u20131:30**  \nThe follow-up question is where else exact reserve overrides collection growth\u2014and how we should guard this path against regression.\n\n## Caption plan\n\nUse sentence-level captions, bottom-centered inside a safe margin, with no more than two lines. Preserve code identifiers in monospace styling if the renderer supports mixed styles.\n\n| Cue | Time | Caption |\n|---|---|---|\n| 1 | 00:00\u201300:05 | This path reserved exactly enough space before every batch. |\n| 2 | 00:05\u201300:10 | With repeated small batches, it did the opposite of its intent. |\n| 3 | 00:10\u201300:18 | After each append, length catches capacity. |\n| 4 | 00:18\u201300:27 | The next exact reserve replaces the buffer and copies the elements again. |\n| 5 | 00:27\u201300:34 | Each new element can trigger copying of everything already there. |\n| 6 | 00:34\u201300:40 | Across the sequence, that work grows quadratically. |\n| 7 | 00:40\u201300:46 | The fix removes the explicit `reserve_exact` call. |\n| 8 | 00:46\u201300:52 | The append now goes directly through `extend`. |\n| 9 | 00:52\u201301:02 | `extend` uses the iterator size hint and normal vector growth. |\n| 10 | 01:02\u201301:11 | Spare capacity lets later appends reuse the same buffer. |\n| 11 | 01:11\u201301:17 | That restores amortized growth for incremental batches. |\n| 12 | 01:17\u201301:22 | The public API does not change. |\n| 13 | 01:22\u201301:26 | Where else does exact reserve override collection growth? |\n| 14 | 01:26\u201301:30 | How should we guard this path against regression? |\n\n## Visual system and branding\n\nNo brand assets were supplied. Use a restrained 16:9 fallback: dark neutral background, off-white text, cool blue for the vector and retained capacity, warm amber for reallocations and copies, modern sans-serif labels, and monospace code. Give the persistent vector handle a stable blue identity; use buffer outlines and pointer motion consistently. Do not imitate a named creator's distinctive branding.\n\n## Approval checklist\n\n- [ ] Audience preset and editable IC assumptions\n- [ ] Message and primary takeaway\n- [ ] Content boundaries and caveats\n- [ ] Manim renderer choice\n- [ ] Storyboard, narration, and captions\n- [ ] 90-second duration\n- [ ] Restrained fallback visual treatment\n\nReply with approval or changes. Production remains blocked until this packet is approved.\n"}], "eval-1-vector-reserve-without_skill-run-1": [{"name": "output.md", "type": "text", "content": "# Proposed video: Restoring efficient vector growth\n\nThis is a planning draft for approval. I have not created animation code or rendered the video.\n\n## Creative brief\n\n- **Audience:** Individual contributors who understand vectors and basic allocation behavior\n- **Length:** 90 seconds\n- **Format:** Manim animation\n- **Goal:** Explain how an apparently helpful exact-reserve call created repeated reallocations, and how the final PR restores amortized growth without changing the public API.\n- **Tone:** Technical and direct, with one concrete visual model rather than benchmark-heavy reporting\n\nAssumptions you can change: viewers know the difference between vector length and capacity; the video should prioritize the mechanism over benchmark numbers; `reserve_exact`, `extend`, and amortized growth can appear without lengthy definitions; and the closing prompt should focus on regression coverage and similar call sites.\n\n## Source interpretation\n\nThe final diff is the governing evidence. It removes:\n\n```text\nitems.reserve_exact(batch.len());\n```\n\nand retains:\n\n```text\nitems.extend(batch);\n```\n\nThe final review says repeated one-element batches previously caused exact growth and repeated copies, while removing the call restores amortized growth. The early discussion said allocator reuse probably made the old call harmless. That early explanation is contradicted by the final implementation rationale and review result, so it will be shown only as a discarded hypothesis, if it appears at all.\n\nThe video will not invent benchmark values or a guaranteed growth factor. The implementer notes guide the presentation: one vector remains visually persistent while its length, capacity, backing buffers, reallocations, and copied elements change.\n\n## Why Manim\n\nManim is the stronger choice because the explanation depends on continuity. Viewers need to track the same vector as its length and capacity change, watch its backing allocation move, and see existing elements copied. A slide or compositing-oriented treatment could show the diff, but it would make the repeated state changes harder to grasp.\n\nProduction will require Manim and FFmpeg. Any capacity values in the animation will be marked as illustrative rather than promises about a particular runtime's growth factor.\n\n## Timed storyboard\n\n| Time | Scene | Visuals | Narration |\n|---|---|---|---|\n| 0:00\u20130:10 | The symptom | A vector with equal length and capacity receives a sequence of one-element batches. | \u201cThis append path reserved exactly enough capacity before every batch. For repeated small batches, that optimization caused repeated work.\u201d |\n| 0:10\u20130:28 | Old path | The vector points to a full heap buffer. Each incoming element produces a buffer one cell larger; old elements copy across and a counter increases. | \u201cWhen length already equals capacity, exact reserve makes room for only the incoming batch. The next small append fills that space, and the cycle repeats: allocate, copy, append.\u201d |\n| 0:28\u20130:40 | Why it scales badly | Three reallocation cycles compress into `1 + 2 + 3 + \u2026` copied elements. | \u201cEach step can copy everything accumulated so far. Across incremental appends, the total copying grows quadratically.\u201d |\n| 0:40\u20130:52 | The diff | The removed `reserve_exact` line fades out while `extend(batch)` remains. | \u201cThe final change is small: remove the explicit exact reserve and let `extend` handle growth.\u201d |\n| 0:52\u20131:10 | New path | A normal growth event creates illustrative spare capacity. Several elements append without another buffer move. | \u201c`extend` uses the iterator size hint and the vector's normal growth strategy. Spare capacity lets later batches reuse the current buffer.\u201d |\n| 1:10\u20131:22 | Outcome | Old and new paths compare reallocation and copy counts without numeric benchmark claims. | \u201cThat restores amortized growth for incremental batches. The behavior improves internally, with no public API change.\u201d |\n| 1:22\u20131:30 | Discussion | End card with two questions. | \u201cWhere else do we override normal collection growth, and what regression coverage should protect this path?\u201d |\n\n## Full narration script\n\n**0:00\u20130:10** \u2014 This append path reserved exactly enough capacity before every batch. For repeated small batches, that optimization caused repeated work.\n\n**0:10\u20130:28** \u2014 When length already equals capacity, exact reserve makes room for only the incoming batch. The next small append fills that space, and the cycle repeats: allocate, copy, append.\n\n**0:28\u20130:40** \u2014 Each step can copy everything accumulated so far. Across incremental appends, the total copying grows quadratically.\n\n**0:40\u20130:52** \u2014 The final change is small: remove the explicit exact reserve and let `extend` handle growth.\n\n**0:52\u20131:10** \u2014 `extend` uses the iterator size hint and the vector's normal growth strategy. Spare capacity lets later batches reuse the current buffer.\n\n**1:10\u20131:22** \u2014 That restores amortized growth for incremental batches. The behavior improves internally, with no public API change.\n\n**1:22\u20131:30** \u2014 Where else do we override normal collection growth, and what regression coverage should protect this path?\n\n## Caption plan\n\nCaptions will follow the narration timings above, split into short one- or two-line phrases. Code identifiers will remain exact. Captions will sit within the lower safe area and avoid covering the vector and heap-buffer labels.\n\nSuggested visual labels:\n\n- `length`\n- `capacity`\n- `allocate`\n- `copy existing elements`\n- `spare capacity`\n- `amortized growth restored`\n- `no public API change`\n\n## Visual direction\n\nUse a dark neutral background, high-contrast type, blue for stable vector state and spare capacity, and amber for allocations and copies. Keep the vector handle visually stable while buffers transform so object identity is never ambiguous. No repository branding was included, so this neutral system is the proposed fallback.\n\n## Approval questions\n\nPlease approve or revise:\n\n1. IC audience assumptions and technical depth\n2. Manim as the renderer\n3. The 90-second story and narration\n4. The exclusion of benchmark numbers and exact growth-factor claims\n5. The closing discussion prompt and neutral visual system\n\nI will wait for approval before any animation or rendering work begins.\n"}], "eval-2-billing-flow-with_skill-run-1": [{"name": "output.md", "type": "text", "content": "# Video plan: Consolidate billing settings into a guided flow\n\n## Recommendation summary\n\n- **Audience preset:** Executive. This PR changes the customer billing experience and rollout posture; leadership needs the outcome, boundaries, and decision context rather than file-level implementation.\n- **Fine-tuning (editable):**\n  - **Assumed viewer knowledge:** Knows Acme has billing settings and staged feature rollouts; does not need familiarity with the console code.\n  - **Primary takeaway:** Billing settings become one guided experience without changing pricing or payment processing, and the existing flag supports a measured rollout.\n  - **Technical depth:** Low. Mention reuse of the existing payment form and mutation only to establish that the change reorganizes the experience rather than replacing payment infrastructure.\n  - **Terminology:** Use \u201cguided billing flow,\u201d \u201celigible workspaces,\u201d and \u201cstaged rollout.\u201d Define no implementation symbols on screen.\n  - **Emphasis:** A more coherent billing-change journey, unchanged financial semantics, and adoption/rollout confidence.\n  - **Exclusions:** File names, component internals, unmeasured speed claims, and detailed analytics implementation.\n  - **Tone:** Concise, factual, confident but measured.\n  - **Discussion enabled:** What adoption signals and rollout evidence should leadership require before expansion beyond 10%?\n- **Renderer:** Remotion.\n- **Target duration:** 85 seconds (within the 90-second target).\n- **Follow-up conversation:** Rollout confidence, adoption measures, and criteria for widening exposure.\n\nThese are recommendations, not fixed inputs. The viewer knowledge, takeaway, depth, terminology, emphasis, exclusions, tone, and closing question can all be changed before approval.\n\n## Evidence and confidence\n\n### Verified implementation\n\n- Three separate billing settings pages are consolidated into a `BillingFlow` with review, payment, and confirmation steps.\n- The flow reuses the existing payment form and server mutation.\n- Analytics cover entry, step completion, cancellation, and success.\n- Pricing, permissions, invoices, and payment processing do not change.\n- Mobile spacing was corrected in the final revision.\n\n### Stated intent\n\n- The flow lets users review their current plan, update payment details, and confirm changes without leaving the flow.\n- Rollout is internal first, then 10% of eligible workspaces.\n- Leadership should be prepared to discuss adoption and rollout confidence.\n\n### Inferences\n\n- The event set can support a useful adoption funnel, but the fixture does not define success thresholds or reporting.\n- Reusing the existing payment form and mutation likely limits backend change risk; this is an inference, not a measured risk claim.\n\n### Contradictions and caveats\n\n- Reviewers rejected language claiming checkout is faster. No performance measurement exists, so the video will not say or imply \u201cfaster.\u201d\n- The assets are described but not embedded in this fixture. Production must confirm all three screenshots and the approved logo are accessible before building.\n\n## Content boundaries\n\n### Include\n\n- Before/after view of three separate pages becoming one guided flow.\n- The three user-facing steps: review, payment, confirmation.\n- Explicit continuity: existing payment form and server mutation remain in use.\n- Explicit non-changes: pricing, permissions, invoices, payment processing.\n- Flagged rollout: internal, then 10% of eligible workspaces.\n- Closing prompt about adoption and rollout confidence.\n\n### Exclude\n\n- Claims about speed, conversion lift, reduced support volume, or other unmeasured outcomes.\n- Source files, component structure, analytics event schemas, and implementation walkthroughs.\n- Any invented rollout threshold or brand rule.\n\n## Renderer decision\n\n### Required visual primitives\n\n- Compose approved screenshots into before/after scenes.\n- Reveal the guided steps editorially, with short callouts.\n- Present boundaries and rollout stages as readable cards on a timeline.\n- Place the approved Acme logo consistently without altering its aspect ratio.\n\n### Evidence for Remotion\n\nThe explanation is driven by UI screenshots, before/after comparison, stakeholder-impact text, and a staged rollout narrative. Those are editorial timeline-composition tasks, so Remotion is the stronger fit.\n\n### Why Manim is weaker\n\nNo persistent conceptual object must transform to explain a technical mechanism. A Manim model would add abstraction where the actual UI and concise editorial composition communicate the change more directly.\n\n### Dependencies and risks\n\n- Confirm the supplied screenshots are the approved final revision and include the corrected mobile spacing where relevant.\n- Preserve the Acme logo aspect ratio. Do not infer colors, typefaces, clear-space rules, or logo variants from the logo alone.\n- Remotion/Node and an MP4 encoding path will be required only after approval.\n\n## Timed narrative\n\n| Time | Narrative purpose | Narration | On-screen content |\n|---|---|---|---|\n| 0:00\u20130:12 | Establish the problem | \u201cBilling changes currently send customers across three separate settings pages.\u201d | Three approved \u201cbefore\u201d views arranged as a fragmented path; label: \u201cThree separate pages\u201d |\n| 0:12\u20130:30 | Show the change | \u201cThis PR consolidates that journey into one guided flow: review the plan, update payment details, then confirm.\u201d | Approved \u201cafter\u201d views; step labels reveal in order: Review \u2192 Payment \u2192 Confirmation |\n| 0:30\u20130:45 | Establish continuity | \u201cIt reuses the existing payment form and server mutation, so this is a new experience\u2014not a change to payment processing.\u201d | \u201cExisting payment form + mutation\u201d remains fixed beneath the new flow; \u201cPayment processing unchanged\u201d |\n| 0:45\u20130:58 | Preserve boundaries | \u201cPricing, permissions, and invoices are unchanged, and the PR makes no performance claim.\u201d | Four concise check cards; \u201cNo measured speed claim\u201d caveat |\n| 0:58\u20131:13 | Explain rollout | \u201cThe existing feature flag supports an internal launch, followed by ten percent of eligible workspaces.\u201d | Two-stage rollout timeline: Internal \u2192 10% eligible workspaces |\n| 1:13\u20131:25 | Set up discussion | \u201cThe next conversation is about evidence: which entry, completion, cancellation, and success signals give us confidence to expand?\u201d | Four event labels converge on: \u201cWhat earns wider rollout?\u201d |\n\nTotal: **85 seconds**.\n\n## Storyboard\n\n### Scene 1: The fragmented journey\n\n- **Duration:** 12 seconds\n- **Purpose:** Show the current experience without overstating customer harm.\n- **Visual state and motion:** Three approved before screenshots enter as separate panels with a simple path connecting them.\n- **On-screen text:** \u201cBilling changes span three settings pages\u201d\n- **Evidence:** PR description; final diff summary.\n- **Transition:** Panels compress toward one frame.\n\n### Scene 2: One guided flow\n\n- **Duration:** 18 seconds\n- **Purpose:** Make the user-facing change memorable.\n- **Visual state and motion:** Approved after screenshots replace the panels; Review, Payment, and Confirmation are highlighted sequentially.\n- **On-screen text:** \u201cOne guided flow\u201d and the three step names.\n- **Evidence:** PR description; final diff summary.\n- **Transition:** Guided-flow frame shifts upward to reveal its existing foundation.\n\n### Scene 3: New experience, existing payment path\n\n- **Duration:** 15 seconds\n- **Purpose:** Distinguish UX consolidation from payment-system replacement.\n- **Visual state and motion:** Flow sits above a steady base labeled \u201cExisting payment form + server mutation.\u201d\n- **On-screen text:** \u201cPayment processing unchanged\u201d\n- **Evidence:** Final diff summary.\n- **Transition:** Base remains briefly while boundary cards enter.\n\n### Scene 4: Clear boundaries\n\n- **Duration:** 13 seconds\n- **Purpose:** Prevent unsupported conclusions.\n- **Visual state and motion:** Pricing, permissions, invoices, and processing appear as unchanged cards; an explicit caveat rules out speed claims.\n- **On-screen text:** \u201cNo pricing or processing change\u201d / \u201cNo measured speed claim\u201d\n- **Evidence:** Final diff summary; review discussion.\n- **Transition:** Cards resolve into a feature-flag icon and rollout line.\n\n### Scene 5: Controlled rollout\n\n- **Duration:** 15 seconds\n- **Purpose:** Explain how exposure expands.\n- **Visual state and motion:** Timeline advances from Internal to 10% of eligible workspaces; no further stage is invented.\n- **On-screen text:** \u201cExisting flag\u201d / \u201cInternal first\u201d / \u201cThen 10%\u201d\n- **Evidence:** Review discussion; rollout notes.\n- **Transition:** Analytics labels enter around the 10% node.\n\n### Scene 6: The leadership question\n\n- **Duration:** 12 seconds\n- **Purpose:** Prepare the follow-up conversation.\n- **Visual state and motion:** Entry, completion, cancellation, and success become four compact signal cards surrounding the closing question.\n- **On-screen text:** \u201cWhat evidence earns wider rollout?\u201d\n- **Evidence:** Final diff summary; rollout notes.\n- **Transition:** End on the approved Acme horizontal logo, aspect ratio preserved.\n\n## Narration script\n\n**0:00\u20130:12** \u2014 Billing changes currently send customers across three separate settings pages.\n\n**0:12\u20130:30** \u2014 This PR consolidates that journey into one guided flow: review the plan, update payment details, then confirm.\n\n**0:30\u20130:45** \u2014 It reuses the existing payment form and server mutation, so this is a new experience\u2014not a change to payment processing.\n\n**0:45\u20130:58** \u2014 Pricing, permissions, and invoices are unchanged, and the PR makes no performance claim.\n\n**0:58\u20131:13** \u2014 The existing feature flag supports an internal launch, followed by ten percent of eligible workspaces.\n\n**1:13\u20131:25** \u2014 The next conversation is about evidence: which entry, completion, cancellation, and success signals give us confidence to expand?\n\n## Caption plan\n\n- Use the narration text verbatim as captions.\n- Split each segment into one- or two-line cues aligned to phrase boundaries.\n- Keep captions clear of screenshot controls and the lower logo safe area.\n- Do not caption visual-only labels redundantly when the same words are narrated.\n\n## Visual system and branding\n\n- Use the three approved screenshots as the primary visual evidence.\n- Use the supplied Acme horizontal logo on the opener or closer and preserve its aspect ratio.\n- Derive no additional brand rules from these assets. Use restrained neutral layouts, high-contrast type, and one unobtrusive accent unless more approved guidance is supplied.\n- Do not invent logo variants, corporate colors, fonts, or clear-space requirements.\n\n## Approval checklist\n\n- [ ] Audience preset and all fine-tuning assumptions\n- [ ] Message and primary takeaway\n- [ ] Content boundaries and caveats\n- [ ] Remotion renderer decision\n- [ ] Storyboard and narration\n- [ ] 85-second duration\n- [ ] Screenshot and logo treatment\n\n**Approval gate:** Please approve this packet or request planning changes. No animation source, captions file, or render will be created until approval.\n"}], "eval-2-billing-flow-without_skill-run-1": [{"name": "output.md", "type": "text", "content": "# Executive video proposal: Guided billing settings\n\n## Recommended treatment\n\nUse a concise, screenshot-led executive update built in **Remotion**. The strongest story is not the component implementation; it is the shift from three separate pages to one guided customer journey, paired with a controlled rollout.\n\nTarget **about 75 seconds**. Use the three approved before/after screenshots as the visual backbone and the supplied horizontal Acme logo on the closing frame. Preserve the logo's aspect ratio. Because no broader brand guide was supplied, keep the remaining design neutral and do not invent Acme colors, fonts, or logo treatments.\n\n### Audience assumptions you can fine-tune\n\n- **Viewer knowledge:** Executives know the product and feature-flag rollout model, but not the billing code.\n- **Takeaway:** The team simplified the billing-settings journey without changing prices or the underlying payment-processing behavior.\n- **Depth:** Outcome and rollout focused, with one sentence about reuse of the current payment form and mutation.\n- **Emphasis:** Customer journey, scope boundaries, staged rollout, and the evidence needed to expand.\n- **Exclude:** File-level details, analytics schemas, and any claim that checkout is faster.\n- **Tone:** Direct, measured, and discussion-oriented.\n- **Closing discussion:** Which adoption and completion signals should determine expansion beyond the initial cohort?\n\n## Evidence boundaries\n\nThe PR supports these claims:\n\n- Three settings pages become one flow with review, payment, and confirmation steps.\n- The existing payment form and server mutation are reused.\n- Entry, completion, cancellation, and success are measured.\n- Pricing, permissions, invoices, and payment processing do not change.\n- Rollout remains behind `billing_flow_v2`: internal first, then 10% of eligible workspaces.\n\nDo not claim the new flow is faster. Reviewers explicitly rejected that language because the PR includes no performance measurement.\n\n## Proposed sequence\n\n| Time | Visual | Narration |\n|---|---|---|\n| 0:00\u20130:12 | Three approved \u201cbefore\u201d screenshots shown as separate stops | \u201cToday, changing billing settings spans three separate pages.\u201d |\n| 0:12\u20130:30 | Approved \u201cafter\u201d views reveal Review, Payment, Confirmation | \u201cThis update brings the journey into one guided flow: review the plan, update payment details, and confirm.\u201d |\n| 0:30\u20130:44 | Existing payment form shown as a stable foundation under the new UI | \u201cThe experience changes, but the existing payment form and server mutation remain in place.\u201d |\n| 0:44\u20130:56 | Short scope card | \u201cPricing, permissions, invoices, and payment processing are unchanged.\u201d |\n| 0:56\u20131:08 | Rollout timeline: Internal \u2192 10% eligible workspaces | \u201cThe current flag supports an internal launch, followed by ten percent of eligible workspaces.\u201d |\n| 1:08\u20131:15 | Analytics event labels and closing question | \u201cWhat evidence will give us confidence to expand?\u201d |\n\n## Why Remotion\n\nThis story depends on composing screenshots, before/after comparisons, short scope cards, and a rollout timeline. Remotion is better suited to that editorial, mixed-media structure than Manim. Manim would be useful if the core explanation depended on tracking a technical mechanism or conceptual objects through continuous transformations; this update does not.\n\n## Narration and captions\n\nThe table above is the draft timed narration script. Use the same wording for captions, split at natural phrase boundaries. No synthesized narration is assumed.\n\n## Approval requested\n\nPlease approve or adjust:\n\n1. The executive assumptions and takeaway\n2. Remotion as the renderer\n3. The 75-second structure and narration\n4. Use of the supplied screenshots and logo\n5. The rollout-confidence closing question\n\nProduction stops here. No animation source or render will be created before approval.\n"}], "eval-3-leader-failover-with_skill-run-1": [{"name": "output.md", "type": "text", "content": "# Video plan: Add lease-based leader failover\n\nStatus: **Awaiting user approval. No animation source or render has been created.**\n\n## Recommendation summary\n\n- **Audience preset:** TPM\n- **Fine-tuning (recommended, editable):** Assume familiarity with leaders, followers, and deployment sequencing, but not the protocol internals. Use moderate technical depth. Emphasize system boundaries, storage dependency, rollout order, observable interruption, and the next recovery slice. Use precise terms\u2014lease, election, quorum, fencing token\u2014and define fencing visually. Keep the tone direct and risk-aware. Exclude file-level details and any claim of seamless recovery.\n- **Renderer:** Manim\n- **Target duration:** 90 seconds\n- **Primary takeaway:** The change can elect and fence a replacement leader after lease expiry, but it does not recover in-flight work or guarantee transparent, zero-downtime failover.\n- **Follow-up conversation enabled:** What interruption can callers observe, what rollout ordering does fencing require, and what should the next in-flight recovery slice cover?\n\n## Evidence and confidence\n\n### Verified implementation\n\n1. The runtime adapter converts elapsed lease deadlines into queued `LeaseExpired` events. (Final diff summary)\n2. The protocol state machine requests votes on `LeaseExpired` and becomes leader after quorum. (Final diff summary)\n3. Leadership terms carry monotonically increasing fencing tokens; the storage adapter rejects stale-token writes. (Final diff summary)\n4. In-flight work is not reconstructed. Zero downtime and transparent recovery are not guaranteed. (Final diff summary; final review)\n\n### Stated intent\n\nThe implementer expects automatic failover that callers will not notice. This is intent from the standup transcript, not implemented behavior.\n\n### Inferences\n\n- The storage adapter must support and enforce fencing before the failover behavior is relied upon in rollout.\n- Callers can observe an interruption between lease expiry, election, and resumption on the new leader; the evidence does not quantify it.\n\n### Contradictions and caveats\n\nThe standup's \u201ccallers won't notice\u201d statement conflicts with the authoritative implementation summary and final review. The video must reject \u201cseamless,\u201d \u201ctransparent,\u201d and \u201czero-downtime\u201d framing. It must not invent a recovery-time bound or claim in-flight operations are resumed.\n\n## Content boundaries\n\n### Include\n\n- Trigger boundary: runtime turns elapsed time into a queued event.\n- Election boundary: protocol processes the event, requests votes, and reaches quorum.\n- Safety boundary: increasing fencing tokens let storage reject the old leader's writes.\n- Delivery implications: storage enforcement dependency, rollout sequencing, possible interruption, and no in-flight reconstruction.\n- Discussion prompt for the next recovery slice.\n\n### Exclude\n\n- Seamless, transparent, or zero-downtime recovery claims.\n- Quantified election or outage timing not present in the PR.\n- Automatic replay or reconstruction of interrupted operations.\n- Implementation details that do not change sequencing or risk decisions.\n\n## Renderer decision\n\n### Required visual primitives\n\nPersistent leader, follower, quorum, lease, term token, and storage objects must retain identity while their state and relationships change: lease expires, a queued event enters the state machine, votes accumulate, leadership transfers, and stale writes are rejected.\n\n### Evidence for Manim\n\nThe core explanation is an evolving distributed-state mechanism. Spatial continuity makes the sequence and safety boundary legible: old leader \u2192 expired lease \u2192 election \u2192 quorum \u2192 new token, while storage compares old and new tokens. Manim is well suited to preserving these objects as their states and relationships transform.\n\n### Why Remotion is weaker\n\nRemotion could compose architecture cards and timeline beats, but replacing or cutting between cards would make it harder to track leader identity, term progression, and the causal relationship between election and stale-writer rejection. The story needs persistent transforming objects more than mixed-media editorial composition.\n\n### Dependencies and risks\n\nManim and its system dependencies must be installed. The animation must avoid implying a guaranteed duration or uninterrupted request path. The storage adapter should be shown as a dependency boundary, not as part of the election state machine.\n\n## Timed narrative\n\n| Time | Narrative purpose | Narration | On-screen content |\n|---|---|---|---|\n| 0\u201312s | Coordination problem | \u201cWhen a coordinator leader disappears, the system needs a safe way to replace it. This change adds that path\u2014but it does not make failover invisible.\u201d | Leader stops; title; warning label: \u201cSafe replacement \u2260 seamless recovery\u201d |\n| 12\u201330s | Trigger and boundary | \u201cThe runtime watches the leader lease. When the deadline passes, it queues a `LeaseExpired` event for the protocol state machine.\u201d | Runtime, event queue, protocol boundary; event moves into queue |\n| 30\u201349s | Election mechanism | \u201cThe follower handles that event, requests votes, and becomes leader only after a quorum.\u201d | Follower changes to candidate; votes accumulate; quorum indicator |\n| 49\u201365s | Stale-writer safety | \u201cEach leadership term receives a higher fencing token. Storage rejects writes carrying an older token, so the previous leader cannot keep writing.\u201d | Token 41 \u2192 42; storage accepts 42 and rejects 41 |\n| 65\u201380s | Operational boundary | \u201cThere can still be an observable interruption during this sequence. Work in flight on the previous leader is not reconstructed.\u201d | Request pauses; in-flight item marked \u201cnot recovered\u201d; no duration claim |\n| 80\u201390s | Follow-up discussion | \u201cBefore rollout, align storage enforcement and deployment order\u2014and decide what the next recovery slice must do with interrupted work.\u201d | Three prompts: storage dependency, rollout order, in-flight recovery |\n\n## Storyboard\n\n### Scene 1: Safe, not seamless\n\n- **Duration:** 12s\n- **Purpose:** Establish the coordination problem and qualification immediately.\n- **Visual state and motion:** A stable leader/follower cluster appears. The leader dims; the system remains unresolved rather than instantly switching.\n- **On-screen text:** \u201cLease-based leader failover\u201d; \u201cSafe replacement \u2260 seamless recovery\u201d\n- **Evidence references:** Final diff summary; final review\n- **Transition:** Camera tracks from the stopped leader to its lease indicator.\n\n### Scene 2: Deadline becomes an event\n\n- **Duration:** 18s\n- **Purpose:** Show the runtime/protocol ownership boundary.\n- **Visual state and motion:** Lease indicator expires; runtime creates a `LeaseExpired` card and places it into a FIFO queue; the protocol consumes it.\n- **On-screen text:** \u201cRuntime: deadline \u2192 queued event\u201d; \u201cProtocol: handles event\u201d\n- **Evidence references:** Final diff summary item 1\n- **Transition:** The consumed event transforms into election state.\n\n### Scene 3: Election reaches quorum\n\n- **Duration:** 19s\n- **Purpose:** Explain the replacement mechanism at TPM depth.\n- **Visual state and motion:** Follower becomes candidate; vote edges illuminate one at a time; quorum changes candidate to leader.\n- **On-screen text:** \u201cRequest votes\u201d; \u201cQuorum\u201d; \u201cNew leader\u201d\n- **Evidence references:** Final diff summary item 2\n- **Transition:** New leader's term badge expands into a fencing token.\n\n### Scene 4: Storage fences stale writers\n\n- **Duration:** 16s\n- **Purpose:** Make the critical safety dependency concrete.\n- **Visual state and motion:** New token 42 travels to storage and is accepted. Old leader attempts token 41; storage rejects it.\n- **On-screen text:** \u201cMonotonic fencing token\u201d; \u201c42 accepted\u201d; \u201c41 rejected as stale\u201d\n- **Evidence references:** Final diff summary items 3\u20134\n- **Transition:** Accepted write clears; an interrupted request remains suspended.\n\n### Scene 5: The remaining interruption\n\n- **Duration:** 15s\n- **Purpose:** Prevent overclaiming and identify rollout risk.\n- **Visual state and motion:** A request pauses across the election interval. An in-flight work item detaches from the old leader but does not move to the new leader.\n- **On-screen text:** \u201cObservable interruption possible\u201d; \u201cIn-flight work is not reconstructed\u201d\n- **Evidence references:** Final diff summary items 5\u20136; final review\n- **Transition:** Diagram recedes into three decision cards.\n\n### Scene 6: Prepare the rollout conversation\n\n- **Duration:** 10s\n- **Purpose:** Give stakeholders concrete follow-up questions.\n- **Visual state and motion:** Highlight three cards in order.\n- **On-screen text:** \u201cStorage enforcement?\u201d; \u201cRollout order?\u201d; \u201cNext recovery slice?\u201d\n- **Evidence references:** TPM standup question; verified scope limits\n- **Transition:** Hold final frame for discussion.\n\n## Narration script\n\n**0:00\u20130:12** \u2014 When a coordinator leader disappears, the system needs a safe way to replace it. This change adds that path\u2014but it does not make failover invisible.\n\n**0:12\u20130:30** \u2014 The runtime watches the leader lease. When the deadline passes, it queues a `LeaseExpired` event for the protocol state machine.\n\n**0:30\u20130:49** \u2014 The follower handles that event, requests votes, and becomes leader only after a quorum.\n\n**0:49\u20131:05** \u2014 Each leadership term receives a higher fencing token. Storage rejects writes carrying an older token, so the previous leader cannot keep writing.\n\n**1:05\u20131:20** \u2014 There can still be an observable interruption during this sequence. Work in flight on the previous leader is not reconstructed.\n\n**1:20\u20131:30** \u2014 Before rollout, align storage enforcement and deployment order\u2014and decide what the next recovery slice must do with interrupted work.\n\n## Caption plan\n\nCreate one caption cue per sentence or natural clause using the exact approved narration. Keep cues within their scene windows, use at most two short lines, and retain the qualifiers \u201cdoes not make failover invisible,\u201d \u201ccan,\u201d and \u201cnot reconstructed.\u201d No synthesized narration audio is planned.\n\n## Visual system and branding\n\nNo brand assets were supplied. Use a restrained 16:9 dark-neutral system with off-white text, a cool accent for the active leader and accepted state, and a warm warning accent for expired/stale/interrupted states. Use stable shapes and labels for each distributed-system object. Do not imitate a named creator's branding.\n\n## Approval checklist\n\n- [ ] Audience and fine-tuning\n- [ ] Message and takeaway\n- [ ] Content boundaries\n- [ ] Renderer\n- [ ] Storyboard and narration\n- [ ] Duration (90 seconds)\n- [ ] Brand treatment\n\n## Post-approval production and review protocol\n\n1. Approval freezes the message, audience, storyboard, exact narration, renderer, duration, and visual direction.\n2. The **coding/rendering agent owns every creation action**: animation source, assets, captions, render commands, MP4 renders, and production manifest. It must not reinterpret the frozen plan.\n3. The **review agent owns verification only**. It reads the frozen plan and inspects the actual MP4, source, captions, narration, and manifest. It never edits source or media and never renders.\n4. If the render has a small implementation mismatch\u2014such as clipping, a typo, caption timing drift, an omitted approved label, or scene timing that misses the approved duration\u2014the review agent sends a precise correction request to the existing coding/rendering agent. That agent edits and rerenders; review verifies the new MP4.\n5. Any proposed change to message, audience, emphasis, technical depth, scene order, substantive claims, narration, renderer, duration, metaphor, or visual direction goes back to the **user** for a higher-level decision. The creation/review loop cannot make that decision.\n6. Delivery occurs only after the review agent verifies the latest rendered MP4 and records a pass.\n"}], "eval-3-leader-failover-without_skill-run-1": [{"name": "output.md", "type": "text", "content": "# Proposed changelog video: Lease-based leader failover\n\nThis is a planning draft for approval. No animation or render has been created.\n\n## Audience and goal\n\n**Audience:** TPMs coordinating the rollout.\n\n**Goal:** Explain what the PR adds, what must be coordinated, and what remains out of scope. Viewers should leave ready to discuss storage compatibility, rollout sequencing, interruption risk, and future recovery work.\n\nThe authoritative implementation does **not** support calling this seamless or transparent failover. The standup comment that callers will not notice a failure is aspirational and conflicts with the PR summary and final reviewer warning. The video will say that directly.\n\n## Format recommendation\n\nUse **Manim** for a roughly 90-second video. The explanation relies on tracking the same leader, follower, lease, election, fencing token, and storage objects as their states and relationships change. Continuous animation will make the causal chain easier to follow.\n\nRemotion would work for a sequence of architecture slides or stakeholder cards, but it is weaker for preserving object identity through lease expiry, quorum, leadership transfer, and stale-token rejection. Manim carries some setup and rendering dependency risk, so the animation should stay visually simple.\n\n## Key boundaries\n\nInclude:\n\n- Runtime converts an elapsed lease deadline into `LeaseExpired`.\n- The protocol requests votes and requires quorum before becoming leader.\n- Increasing fencing tokens allow storage to reject stale-leader writes.\n- Storage enforcement is a rollout dependency.\n- An interruption can be visible, and in-flight operations are not reconstructed.\n\nExclude:\n\n- \u201cZero downtime,\u201d \u201cseamless,\u201d or \u201ccallers won't notice.\u201d\n- Recovery-time guarantees.\n- Claims that interrupted operations resume automatically.\n\n## Storyboard and narration\n\n| Time | Visual | Narration |\n|---|---|---|\n| 0:00\u20130:12 | A leader disappears while the follower remains in place. \u201cSafe, not seamless\u201d appears. | \u201cThis PR adds a safe path to replace a lost leader. It does not guarantee invisible or zero-downtime recovery.\u201d |\n| 0:12\u20130:29 | The leader lease expires. Runtime emits a `LeaseExpired` event toward the protocol. | \u201cWhen the runtime observes an expired lease, it queues a `LeaseExpired` event for the protocol state machine.\u201d |\n| 0:29\u20130:47 | Follower becomes candidate; votes arrive until quorum. | \u201cThe follower requests votes and becomes the new leader only after reaching quorum.\u201d |\n| 0:47\u20131:04 | Term token increases from 8 to 9. Storage accepts 9 and rejects an old write carrying 8. | \u201cEach term has a higher fencing token. The storage adapter rejects stale tokens, preventing the previous leader from continuing to write.\u201d |\n| 1:04\u20131:19 | A request pauses between leaders; an in-flight work item stays behind. | \u201cThis still leaves an observable interruption. Work that was in flight on the previous leader is not reconstructed by this change.\u201d |\n| 1:19\u20131:30 | Three prompts appear: storage enforcement, rollout order, next recovery slice. | \u201cThe rollout discussion should align storage enforcement and sequencing, then define what the next slice must do for interrupted work.\u201d |\n\n## Visual direction\n\nUse a dark, restrained 16:9 diagram style. Keep the leader and follower visually stable across scenes. Use blue for the valid leader/token path and amber for expiry, stale writes, and interrupted work. If company brand assets are provided, adapt the palette and typography without weakening warning-state contrast.\n\n## Approval questions\n\nPlease approve or revise:\n\n1. TPM audience and coordination emphasis\n2. The explicit \u201csafe, not seamless\u201d framing\n3. Manim as renderer\n4. The 90-second storyboard and narration\n5. The rollout discussion prompts\n\n## After approval\n\nA production owner will implement the animation, captions, and MP4 from the approved storyboard. A separate reviewer will compare the output with the approved plan and inspect timing, legibility, factual claims, and synchronization.\n\nFor small mismatches\u2014such as clipping, incorrect timing, missing labels, or caption drift\u2014the reviewer should report the exact discrepancy to production, which will edit and rerender. The reviewer should not directly alter the video. Any request that changes the story, audience, technical depth, renderer, duration, or substantive narration should return to the user for approval rather than being handled as a production fix.\n"}]}, "benchmark": {"metadata": {"skill_name": "pr-change-video", "skill_path": "<path/to/skill>", "executor_model": "<model-name>", "analyzer_model": "<model-name>", "timestamp": "2026-08-09T17:03:30Z", "evals_run": [1, 2, 3], "runs_per_configuration": 3}, "runs": [{"eval_id": 1, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.", "passed": true, "evidence": "The plan explicitly separates P1-P3 implementation facts from C1-C5 narrative claims. Motivation comes from the PR description (C2), evaluated impact from the final review (C3), framing from implementer notes (C4), and the contradiction from the early discussion versus final review. It labels regression coverage and similar call sites as planning questions rather than facts and excludes unsupported benchmark values, allocator guarantees, growth factors, and broader impact claims."}, {"text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.", "passed": true, "evidence": "The Manim rationale cites implementer notes C4 and final review C3, then explains that the persistent vector changes length and capacity while buffers are allocated, populated, and replaced and elements are copied."}, {"text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.", "passed": true, "evidence": "It includes an explicit editable IC assumptions section, a seven-scene storyboard with durations and provenance, a fully timed narration script, a 13-cue caption table with exact time ranges, and a detailed renderer decision."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "The status says no animation source or video has been created, the closing says production is blocked until approval, and the run contains only a Markdown planning output."}], "notes": ["User approval is required for the audience, provenance boundaries, renderer, storyboard, narration, captions, duration, and visual treatment."]}, {"eval_id": 2, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.", "passed": true, "evidence": "The output explicitly selects the Executive preset and exposes editable assumed viewer knowledge, primary takeaway, technical depth, terminology, emphasis, exclusions, tone, and discussion fields. It separates implementation facts from narrative claims, traces the leadership focus to the rollout notes, traces the three-page-to-flow framing to the PR description, and explicitly excludes any unprovided motivation, benefit, tradeoff, risk assessment, or outcome prediction. The only impact framing used is the supplied rollout discussion; no code-derived business or user benefit is asserted."}, {"text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.", "passed": true, "evidence": "It recommends Remotion because the plan uses the supplied screenshots, UI comparison, stakeholder-oriented text, and a rollout timeline, calling these editorial composition tasks. It also explains why a persistent conceptual model for Manim is unnecessary."}, {"text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.", "passed": true, "evidence": "The target and timed narrative total 85 seconds. The visual-system section uses the supplied screenshots and horizontal Acme logo, preserves the logo aspect ratio, and explicitly declines to invent logo variants, brand fonts, colors, spacing requirements, or other brand specifications."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "The output ends with an explicit approval gate stating that no animation source, captions file, production project, or rendered video will be created before approval. The run contains only outputs/output.md."}], "notes": ["The fixture names but does not embed the three screenshots and logo, so production access must be verified after approval.", "The user must approve or revise the audience assumptions, narrative, renderer, timing, and asset treatment."]}, {"eval_id": 3, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 0.0, "tokens": 13306, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.", "passed": true, "evidence": "The evidence ledger accurately limits I1-I6 to the fixture's PR description and final diff summary. It separately attributes the implementer's expectation, TPM discussion framing, and review qualification to C1-C3 from the standup and final review. It explicitly says the context does not establish rollout order, dependencies beyond visible storage, interruption duration, or the next recovery slice, and therefore asks rather than invents answers. The plan rejects seamless, transparent, zero-downtime, and unnoticeable recovery claims. Renderer-fit judgments concern video-production primitives, not inferred motivation, benefit, risk, or evaluation of the implementation."}, {"text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.", "passed": true, "evidence": "The editable TPM tuning calls for runtime/protocol/storage boundaries, dependencies, rollout order, observable interruption, and the next recovery slice. The plan preserves unknown rollout details as questions and ends with the four discussion areas stated verbatim by the TPM in the fixture."}, {"text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.", "passed": true, "evidence": "The plan identifies persistent leader, follower, lease, event queue, vote, token, and storage objects whose state and relationships change, recommends Manim for continuous transformations, and explains that Remotion's card-oriented composition would make identity and the event-to-election-to-token sequence harder to track."}, {"text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.", "passed": true, "evidence": "Protocol steps 2-3 assign source, asset, caption, manifest, edit, and render work exclusively to the coding/rendering agent, while the review agent only inspects and compares artifacts and is explicitly prohibited from editing or rendering."}, {"text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.", "passed": true, "evidence": "Protocol step 4 sends clipping, contrast, typo, caption timing, missing-label, scene-duration, and transition corrections to the coding/rendering agent. Step 5 sends message, audience, emphasis, depth, order, claims, narration, renderer, duration, metaphor, visual direction, and unsupported-analysis changes to the user."}], "notes": ["The supplied context does not prescribe rollout order, quantify interruption, identify dependencies beyond the storage adapter, or define the next recovery slice.", "User approval is required for the audience tuning, message, boundaries, renderer, storyboard, narration, duration, and branding before production."]}, {"eval_id": 1, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.", "passed": true, "evidence": "The output confines the diff section to the removed and retained calls, iterator size-hint behavior, and unchanged API. It separately attributes intent to the PR description, performance findings to the final review, and visual framing to implementer notes. It identifies the early allocator-reuse comment as conflicting with the final review. Unsupported benchmark values, growth factors, allocator guarantees, and existing-regression-coverage claims are explicitly excluded; the closing items are phrased as questions."}, {"text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.", "passed": true, "evidence": "The 'Why Manim' section bases the choice on one persistent vector whose length, capacity, backing buffer, and copy count change, and the storyboard animates buffer replacement and element copying."}, {"text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.", "passed": true, "evidence": "It gives editable IC assumptions, a seven-part storyboard with exact time ranges, a separately timed narration script, caption synchronization and split-point instructions, and an explicit Manim rationale."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "It opens by stating that no animation or render has been created and ends by withholding both until approval. The run contains only the Markdown plan."}], "notes": ["User approval is required for the IC assumptions, renderer, sequence, narration, exclusions, visuals, and closing questions."]}, {"eval_id": 2, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.", "passed": true, "evidence": "The output provides editable Knowledge, Takeaway, Depth, Emphasis, Exclusions, Tone, and Discussion prompt fields for an executive update. Its source-boundaries section directly assigns the page-consolidation framing to the PR description and the rollout/adoption framing to review and rollout notes. It makes no inferred motivation, tradeoff, customer benefit, risk reduction, or business-outcome claim, and explicitly excludes outcomes not stated in the supplied material."}, {"text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.", "passed": true, "evidence": "It explicitly recommends Remotion because the available material consists of approved screenshots, before/after UI comparisons, scope cards, a rollout timeline, and a logo, and describes that treatment as visual and editorial."}, {"text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.", "passed": true, "evidence": "The recommendation and proposed timeline target 80 seconds. The brand section uses the supplied Acme horizontal logo, preserves its aspect ratio, and explicitly refuses to invent Acme colors, fonts, spacing standards, or logo variants."}, {"text": "The output stops before animation source creation or rendering.", "passed": true, "evidence": "The final sentence states that no animation source or render will be created until approval. The run contains only outputs/output.md."}], "notes": ["The user must approve or revise the audience assumptions, takeaway, renderer, timeline, narration, exclusions, closing question, and asset treatment."]}, {"eval_id": 3, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 0.0, "tokens": 5061, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.", "passed": true, "evidence": "The evidence-boundary section accurately separates all six implementation facts from the PR and all communication framing from the standup and final review. The output treats the implementer's unnoticeable-failover statement as a conflicting expectation, rejects seamless and transparent recovery, and explicitly declines to prescribe rollout order, quantify interruption, or define the next recovery slice. Its Manim-versus-Remotion judgment is a video-production decision based on visual primitives, not an evaluative claim about the implementation."}, {"text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.", "passed": true, "evidence": "The goal targets TPM rollout coordination, the audience assumptions call for runtime/protocol/storage boundaries and sequencing questions, and the closing scene repeats the fixture-supported topics of dependencies, observable interruption, rollout order, and the next recovery slice without inventing answers."}, {"text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.", "passed": true, "evidence": "The output recommends Manim because the same leader, follower, lease, queue, votes, tokens, and storage component change state. It contrasts Remotion's cards, screenshots, and release-timeline strengths and explains why cuts would make the evolving mechanism less direct."}, {"text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.", "passed": true, "evidence": "The production section says the coding/rendering agent alone creates and edits animation source, captions, and assets and runs every render; the review agent verifies the actual output and does not edit or render."}, {"text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.", "passed": true, "evidence": "Small clipping, missing-text, caption-timing, and scene-timing discrepancies go to the coding/rendering agent for edit and rerender. Changes to audience, message, emphasis, story order, narration, renderer, duration, claims, or visual concept return to the user."}], "notes": ["The materials do not prescribe rollout order, quantify interruption, or define the next recovery slice.", "The user must approve or revise the TPM assumptions, duration, renderer, qualification, storyboard, and discussion prompts before production."]}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 4435.3333, "stddev": 7682.2227, "min": 0, "max": 13306}}, "without_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 1687.0, "stddev": 2921.9697, "min": 0, "max": 5061}}, "delta": {"pass_rate": "+0.00", "time_seconds": "+0.0", "tokens": "+2748"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

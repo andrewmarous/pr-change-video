@@ -1,0 +1,74 @@
+{
+  "expectations": [
+    {
+      "text": "The output rejects seamless or transparent recovery claims and treats the PR implementation as authoritative.",
+      "passed": true,
+      "evidence": "The draft says the authoritative implementation does not support seamless or transparent failover, calls the standup statement aspirational and conflicting, and explicitly excludes zero-downtime and callers-won't-notice claims."
+    },
+    {
+      "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+      "passed": true,
+      "evidence": "The audience is TPMs coordinating rollout, and the stated goal and storyboard cover storage compatibility, rollout sequencing, interruption risk, future recovery work, and closing discussion prompts."
+    },
+    {
+      "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+      "passed": true,
+      "evidence": "The draft chooses Manim to preserve leader, follower, lease, election, token, and storage object identity through state changes, and explains that Remotion is weaker for tracking the causal chain through card or slide transitions."
+    },
+    {
+      "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+      "passed": true,
+      "evidence": "The after-approval section assigns implementation, captions, and MP4 creation to the production owner; it assigns comparison, inspection, and discrepancy reporting to the separate reviewer and says the reviewer should not directly alter the video."
+    },
+    {
+      "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+      "passed": true,
+      "evidence": "The draft sends clipping, timing, missing-label, and caption-drift discrepancies to production for edit and rerender, while changes to story, audience, depth, renderer, duration, or substantive narration return to the user for approval."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 4505,
+    "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "No animation or render has been created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "The only run artifact is outputs/output.md, and it identifies itself as a planning draft with no animation or render created."
+    },
+    {
+      "claim": "The implementation emits LeaseExpired, requires quorum, and uses increasing fencing tokens for stale-write rejection.",
+      "type": "factual",
+      "verified": false,
+      "evidence": "The draft states these implementation details, but the synthetic PR export is absent from the graded run artifacts, so the claims cannot be independently checked."
+    },
+    {
+      "claim": "The implementation does not provide invisible recovery or reconstruct in-flight operations.",
+      "type": "factual",
+      "verified": false,
+      "evidence": "The draft consistently presents these as authoritative limits, but the underlying PR summary and reviewer warning are not available to the grader."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The source PR export and supporting context were not included with the grading artifacts, so implementation claims cannot be independently verified."
+    ],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "The baseline also satisfies every current assertion. Add a direct assertion for stopping before production pending explicit approval, and consider checks for traceable evidence classes or a frozen-plan contract if those are intended differentiators."
+      }
+    ],
+    "overall": "The assertions cover the requested content but do not distinguish the skill run from a strong baseline; the approval gate is notably unasserted."
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "expectations": [
+    {
+      "text": "The output treats the final PR diff as authoritative and identifies the early discussion as contradicted.",
+      "passed": true,
+      "evidence": "The plan states that the final diff removes `items.reserve_exact(batch.len())`, explicitly labels the early allocator-reuse explanation as a 'Contradicted early discussion,' and says, 'The final diff is authoritative.'"
+    },
+    {
+      "text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+      "passed": true,
+      "evidence": "The renderer section recommends Manim because a persistent vector changes length and capacity, its backing buffer is replaced, and elements copy between buffers; it also explains why Remotion would make viewers infer the allocation cycle."
+    },
+    {
+      "text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+      "passed": true,
+      "evidence": "It provides an 'Editable audience assumptions' section, a seven-scene storyboard with durations, a separately timed narration script, a 14-cue caption table, and a detailed renderer decision with required primitives and evidence."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "The opening status says, 'No animation source has been created and no video has been rendered,' and the closing says production remains blocked until approval. The only output file is the planning document."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The final diff removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.",
+      "type": "factual",
+      "verified": false,
+      "evidence": "The output consistently identifies this as final-diff evidence, but the underlying synthetic PR export is not included in the grading inputs, so the source claim cannot be independently verified."
+    },
+    {
+      "claim": "Repeated exact growth causes repeated copying and quadratic total work for one-element incremental batches.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The described sequence repeatedly copies all accumulated elements and expresses the work as `1 + 2 + 3 + ...`, which substantively supports quadratic cumulative copying under the stated scenario."
+    },
+    {
+      "claim": "No animation source or rendered video was created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "Only `outputs/output.md` exists for the run, and it is explicitly an approval-stage planning packet."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "The user must approve or revise the audience assumptions, renderer, narrative, duration, and visual treatment before production."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The output treats the final PR diff as authoritative and identifies the early discussion as contradicted.",
+        "reason": "The assertion verifies evidence-handling language but the grading fixture does not include the synthetic PR export, so a grader cannot independently confirm that the reported contradiction matches the source material."
+      }
+    ],
+    "overall": "The assertions are meaningful and the output satisfies all four. Including the source fixture in the grading inputs would make the evidence-authority assertion independently verifiable."
+  }
+}

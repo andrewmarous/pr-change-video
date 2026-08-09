@@ -1,0 +1,77 @@
+{
+  "expectations": [
+    {
+      "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+      "passed": true,
+      "evidence": "The plan selects Executive and exposes editable viewer knowledge, takeaway, technical depth, emphasis, exclusions, tone, and discussion framing. Adoption and rollout confidence are attributed directly to rollout notes, and no implementation-derived motivation, benefit, risk, tradeoff, or impact claim is introduced."
+    },
+    {
+      "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+      "passed": true,
+      "evidence": "It selects Remotion because approved screenshots, UI callouts, scope cards, and rollout stages require editorial composition."
+    },
+    {
+      "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+      "passed": true,
+      "evidence": "The plan totals 75 seconds. It uses the available approved screenshots and Acme horizontal logo, preserves its aspect ratio, and explicitly declines to invent Acme colors, fonts, spacing, or logo variants. No new asset prerequisite is introduced."
+    },
+    {
+      "text": "The artifact preserves source meaning without adding recommendations, implications, next steps, or invitations to further discussion.",
+      "passed": true,
+      "evidence": "Each source-ledger and narration claim is directly supported by the fixture. The close retains the source's adoption-and-rollout-confidence framing without adding a question, recommendation, criterion, implication, conclusion, or next step. Prompt-required treatment selection and approval are not additions to the source narrative."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 700 words.",
+      "passed": true,
+      "evidence": "The file contains 491 whitespace-delimited words. Facts are grouped in one concise ledger and then instantiated in a single timed-scene table; it does not duplicate the table as a separate storyboard or narration script. Necessary caption and on-screen-text overlap is functional rather than editorial repetition."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "The approval section says no animation source or render has been created, and the run contains only outputs/output.md."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "BillingFlow adds the three stated steps, reuses the existing form and mutation, adds the four analytics classes, and leaves the listed scope unchanged.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture final diff summary."
+    },
+    {
+      "claim": "Users can complete the stated changes without leaving the flow.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture PR description."
+    },
+    {
+      "claim": "The rollout uses the existing flag, enables internally first, and then reaches ten percent of eligible workspaces.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture review discussion and rollout notes."
+    },
+    {
+      "claim": "There is no measured checkout-speed claim.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The fixture explicitly says reviewers rejected faster-checkout language because the PR includes no performance measurements."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "The user must approve or revise the plan before production, as requested."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The packet is notably succinct at 491 words. Its small amount of repetition is necessary to connect the compact source ledger to the exact narration, visuals, captions, and approval decision."
+  }
+}

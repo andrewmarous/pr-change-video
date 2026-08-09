@@ -1,0 +1,50 @@
+{
+  "skill_name": "pr-change-video",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a 90-second IC-facing video for this GitHub PR that fixes repeated vector reserve calls causing quadratic reallocations. The PR discussion contains an early explanation that conflicts with the final diff. Use the attached implementer notes for context. Stop after planning so I can approve it.",
+      "expected_output": "An approval packet that treats the final PR diff as authoritative, recommends Manim based on evolving memory and capacity state, exposes IC assumptions, and performs no production work before approval.",
+      "files": ["evals/files/vector-reserve-pr.md"],
+      "expectations": [
+        "The workflow gathers the PR diff, reviews, inline comments, and general discussion.",
+        "The plan distinguishes implementation facts from context-supported narrative claims, includes no inferred argumentative claims, and calls out the conflicting early explanation.",
+        "The renderer choice is Manim because persistent conceptual objects transform over time, not merely because the topic is technical.",
+        "The plan includes editable IC audience assumptions, a timed storyboard, narration, captions, and a renderer rationale.",
+        "The artifact adds no implications, conclusions, next steps, discussion prompts, or causal links that are absent from the supplied context.",
+        "The approval packet states each claim once where practical and stays at or below 550 words.",
+        "No animation source or render is created before explicit user approval."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Turn this GitHub PR for a redesigned billing settings flow into a quick executive update. The PR has screenshots, review comments, rollout notes, and our logo assets. Recommend the treatment, but let me fine-tune what executives should take away. Stop for approval before building anything.",
+      "expected_output": "A concise executive plan recommending Remotion for a screenshot-led product narrative, using available branding, exposing audience assumptions, and stopping before production.",
+      "files": ["evals/files/billing-flow-pr.md"],
+      "expectations": [
+        "The plan recommends the executive preset while exposing takeaway, knowledge, depth, emphasis, exclusions, tone, and discussion goal for editing, with all argumentative framing traced to provided context.",
+        "The plan recommends Remotion because the explanation is driven by UI media and editorial composition.",
+        "The proposed duration is 90 seconds or less unless the user explicitly approves more.",
+        "The plan uses supplied brand assets without inventing brand rules.",
+        "The artifact preserves source meaning without adding recommendations, implications, next steps, or invitations to further discussion.",
+        "The approval packet states each claim once where practical and stays at or below 550 words.",
+        "The workflow stops for explicit approval before source creation or rendering."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Make a TPM-oriented changelog video from this PR implementing leader failover. Supporting standup transcripts suggest an automatic recovery guarantee that the code does not implement. After I approve the plan, render it and have a separate reviewer correct small sync problems without changing the story.",
+      "expected_output": "A TPM plan that rejects the unsupported guarantee, selects Manim if state and message evolution dominate, then enforces separate creation and verification ownership with only bounded corrective rerenders.",
+      "files": ["evals/files/leader-failover-pr.md"],
+      "expectations": [
+        "The PR code controls claims about implemented behavior, while the transcript exclusively controls stated motivation, tradeoffs, and framing; the unsupported guarantee is called out rather than adopted.",
+        "The TPM treatment emphasizes boundaries, dependencies, risks, and discussion points rather than file-level detail.",
+        "The artifact includes boundaries, dependencies, rollout, interruption, or discussion points only when explicitly present in the supplied context and adds no next steps or calls to discussion.",
+        "The approval packet states each claim once where practical and stays at or below 550 words.",
+        "The renderer recommendation is justified by the planned explanatory primitives and includes why the alternative is weaker.",
+        "The coding/rendering agent exclusively owns source changes and renders, while the review agent exclusively verifies.",
+        "Small implementation mismatches return to the coding/rendering agent; higher-level changes return to the user."
+      ]
+    }
+  ]
+}

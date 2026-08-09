@@ -1,0 +1,318 @@
+{
+  "metadata": {
+    "skill_name": "pr-change-video",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-08-09T17:03:30Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.",
+          "passed": true,
+          "evidence": "The plan explicitly separates P1-P3 implementation facts from C1-C5 narrative claims. Motivation comes from the PR description (C2), evaluated impact from the final review (C3), framing from implementer notes (C4), and the contradiction from the early discussion versus final review. It labels regression coverage and similar call sites as planning questions rather than facts and excludes unsupported benchmark values, allocator guarantees, growth factors, and broader impact claims."
+        },
+        {
+          "text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+          "passed": true,
+          "evidence": "The Manim rationale cites implementer notes C4 and final review C3, then explains that the persistent vector changes length and capacity while buffers are allocated, populated, and replaced and elements are copied."
+        },
+        {
+          "text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+          "passed": true,
+          "evidence": "It includes an explicit editable IC assumptions section, a seven-scene storyboard with durations and provenance, a fully timed narration script, a 13-cue caption table with exact time ranges, and a detailed renderer decision."
+        },
+        {
+          "text": "The output stops before animation source creation or rendering.",
+          "passed": true,
+          "evidence": "The status says no animation source or video has been created, the closing says production is blocked until approval, and the run contains only a Markdown planning output."
+        }
+      ],
+      "notes": [
+        "User approval is required for the audience, provenance boundaries, renderer, storyboard, narration, captions, duration, and visual treatment."
+      ]
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+          "passed": true,
+          "evidence": "The output explicitly selects the Executive preset and exposes editable assumed viewer knowledge, primary takeaway, technical depth, terminology, emphasis, exclusions, tone, and discussion fields. It separates implementation facts from narrative claims, traces the leadership focus to the rollout notes, traces the three-page-to-flow framing to the PR description, and explicitly excludes any unprovided motivation, benefit, tradeoff, risk assessment, or outcome prediction. The only impact framing used is the supplied rollout discussion; no code-derived business or user benefit is asserted."
+        },
+        {
+          "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+          "passed": true,
+          "evidence": "It recommends Remotion because the plan uses the supplied screenshots, UI comparison, stakeholder-oriented text, and a rollout timeline, calling these editorial composition tasks. It also explains why a persistent conceptual model for Manim is unnecessary."
+        },
+        {
+          "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+          "passed": true,
+          "evidence": "The target and timed narrative total 85 seconds. The visual-system section uses the supplied screenshots and horizontal Acme logo, preserves the logo aspect ratio, and explicitly declines to invent logo variants, brand fonts, colors, spacing requirements, or other brand specifications."
+        },
+        {
+          "text": "The output stops before animation source creation or rendering.",
+          "passed": true,
+          "evidence": "The output ends with an explicit approval gate stating that no animation source, captions file, production project, or rendered video will be created before approval. The run contains only outputs/output.md."
+        }
+      ],
+      "notes": [
+        "The fixture names but does not embed the three screenshots and logo, so production access must be verified after approval.",
+        "The user must approve or revise the audience assumptions, narrative, renderer, timing, and asset treatment."
+      ]
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 0.0,
+        "tokens": 13306,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+          "passed": true,
+          "evidence": "The evidence ledger accurately limits I1-I6 to the fixture's PR description and final diff summary. It separately attributes the implementer's expectation, TPM discussion framing, and review qualification to C1-C3 from the standup and final review. It explicitly says the context does not establish rollout order, dependencies beyond visible storage, interruption duration, or the next recovery slice, and therefore asks rather than invents answers. The plan rejects seamless, transparent, zero-downtime, and unnoticeable recovery claims. Renderer-fit judgments concern video-production primitives, not inferred motivation, benefit, risk, or evaluation of the implementation."
+        },
+        {
+          "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+          "passed": true,
+          "evidence": "The editable TPM tuning calls for runtime/protocol/storage boundaries, dependencies, rollout order, observable interruption, and the next recovery slice. The plan preserves unknown rollout details as questions and ends with the four discussion areas stated verbatim by the TPM in the fixture."
+        },
+        {
+          "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+          "passed": true,
+          "evidence": "The plan identifies persistent leader, follower, lease, event queue, vote, token, and storage objects whose state and relationships change, recommends Manim for continuous transformations, and explains that Remotion's card-oriented composition would make identity and the event-to-election-to-token sequence harder to track."
+        },
+        {
+          "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+          "passed": true,
+          "evidence": "Protocol steps 2-3 assign source, asset, caption, manifest, edit, and render work exclusively to the coding/rendering agent, while the review agent only inspects and compares artifacts and is explicitly prohibited from editing or rendering."
+        },
+        {
+          "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+          "passed": true,
+          "evidence": "Protocol step 4 sends clipping, contrast, typo, caption timing, missing-label, scene-duration, and transition corrections to the coding/rendering agent. Step 5 sends message, audience, emphasis, depth, order, claims, narration, renderer, duration, metaphor, visual direction, and unsupported-analysis changes to the user."
+        }
+      ],
+      "notes": [
+        "The supplied context does not prescribe rollout order, quantify interruption, identify dependencies beyond the storage adapter, or define the next recovery slice.",
+        "User approval is required for the audience tuning, message, boundaries, renderer, storyboard, narration, duration, and branding before production."
+      ]
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.",
+          "passed": true,
+          "evidence": "The output confines the diff section to the removed and retained calls, iterator size-hint behavior, and unchanged API. It separately attributes intent to the PR description, performance findings to the final review, and visual framing to implementer notes. It identifies the early allocator-reuse comment as conflicting with the final review. Unsupported benchmark values, growth factors, allocator guarantees, and existing-regression-coverage claims are explicitly excluded; the closing items are phrased as questions."
+        },
+        {
+          "text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+          "passed": true,
+          "evidence": "The 'Why Manim' section bases the choice on one persistent vector whose length, capacity, backing buffer, and copy count change, and the storyboard animates buffer replacement and element copying."
+        },
+        {
+          "text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+          "passed": true,
+          "evidence": "It gives editable IC assumptions, a seven-part storyboard with exact time ranges, a separately timed narration script, caption synchronization and split-point instructions, and an explicit Manim rationale."
+        },
+        {
+          "text": "The output stops before animation source creation or rendering.",
+          "passed": true,
+          "evidence": "It opens by stating that no animation or render has been created and ends by withholding both until approval. The run contains only the Markdown plan."
+        }
+      ],
+      "notes": [
+        "User approval is required for the IC assumptions, renderer, sequence, narration, exclusions, visuals, and closing questions."
+      ]
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+          "passed": true,
+          "evidence": "The output provides editable Knowledge, Takeaway, Depth, Emphasis, Exclusions, Tone, and Discussion prompt fields for an executive update. Its source-boundaries section directly assigns the page-consolidation framing to the PR description and the rollout/adoption framing to review and rollout notes. It makes no inferred motivation, tradeoff, customer benefit, risk reduction, or business-outcome claim, and explicitly excludes outcomes not stated in the supplied material."
+        },
+        {
+          "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+          "passed": true,
+          "evidence": "It explicitly recommends Remotion because the available material consists of approved screenshots, before/after UI comparisons, scope cards, a rollout timeline, and a logo, and describes that treatment as visual and editorial."
+        },
+        {
+          "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+          "passed": true,
+          "evidence": "The recommendation and proposed timeline target 80 seconds. The brand section uses the supplied Acme horizontal logo, preserves its aspect ratio, and explicitly refuses to invent Acme colors, fonts, spacing standards, or logo variants."
+        },
+        {
+          "text": "The output stops before animation source creation or rendering.",
+          "passed": true,
+          "evidence": "The final sentence states that no animation source or render will be created until approval. The run contains only outputs/output.md."
+        }
+      ],
+      "notes": [
+        "The user must approve or revise the audience assumptions, takeaway, renderer, timeline, narration, exclusions, closing question, and asset treatment."
+      ]
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 0.0,
+        "tokens": 5061,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+          "passed": true,
+          "evidence": "The evidence-boundary section accurately separates all six implementation facts from the PR and all communication framing from the standup and final review. The output treats the implementer's unnoticeable-failover statement as a conflicting expectation, rejects seamless and transparent recovery, and explicitly declines to prescribe rollout order, quantify interruption, or define the next recovery slice. Its Manim-versus-Remotion judgment is a video-production decision based on visual primitives, not an evaluative claim about the implementation."
+        },
+        {
+          "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+          "passed": true,
+          "evidence": "The goal targets TPM rollout coordination, the audience assumptions call for runtime/protocol/storage boundaries and sequencing questions, and the closing scene repeats the fixture-supported topics of dependencies, observable interruption, rollout order, and the next recovery slice without inventing answers."
+        },
+        {
+          "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+          "passed": true,
+          "evidence": "The output recommends Manim because the same leader, follower, lease, queue, votes, tokens, and storage component change state. It contrasts Remotion's cards, screenshots, and release-timeline strengths and explains why cuts would make the evolving mechanism less direct."
+        },
+        {
+          "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+          "passed": true,
+          "evidence": "The production section says the coding/rendering agent alone creates and edits animation source, captions, and assets and runs every render; the review agent verifies the actual output and does not edit or render."
+        },
+        {
+          "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+          "passed": true,
+          "evidence": "Small clipping, missing-text, caption-timing, and scene-timing discrepancies go to the coding/rendering agent for edit and rerender. Changes to audience, message, emphasis, story order, narration, renderer, duration, claims, or visual concept return to the user."
+        }
+      ],
+      "notes": [
+        "The materials do not prescribe rollout order, quantify interruption, or define the next recovery slice.",
+        "The user must approve or revise the TPM assumptions, duration, renderer, qualification, storyboard, and discussion prompts before production."
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 4435.3333,
+        "stddev": 7682.2227,
+        "min": 0,
+        "max": 13306
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 1687.0,
+        "stddev": 2921.9697,
+        "min": 0,
+        "max": 5061
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": "+0.0",
+      "tokens": "+2748"
+    }
+  },
+  "notes": []
+}

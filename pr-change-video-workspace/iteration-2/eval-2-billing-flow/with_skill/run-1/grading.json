@@ -1,0 +1,69 @@
+{
+  "expectations": [
+    {
+      "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+      "passed": true,
+      "evidence": "The output explicitly selects the Executive preset and exposes editable assumed viewer knowledge, primary takeaway, technical depth, terminology, emphasis, exclusions, tone, and discussion fields. It separates implementation facts from narrative claims, traces the leadership focus to the rollout notes, traces the three-page-to-flow framing to the PR description, and explicitly excludes any unprovided motivation, benefit, tradeoff, risk assessment, or outcome prediction. The only impact framing used is the supplied rollout discussion; no code-derived business or user benefit is asserted."
+    },
+    {
+      "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+      "passed": true,
+      "evidence": "It recommends Remotion because the plan uses the supplied screenshots, UI comparison, stakeholder-oriented text, and a rollout timeline, calling these editorial composition tasks. It also explains why a persistent conceptual model for Manim is unnecessary."
+    },
+    {
+      "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+      "passed": true,
+      "evidence": "The target and timed narrative total 85 seconds. The visual-system section uses the supplied screenshots and horizontal Acme logo, preserves the logo aspect ratio, and explicitly declines to invent logo variants, brand fonts, colors, spacing requirements, or other brand specifications."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "The output ends with an explicit approval gate stating that no animation source, captions file, production project, or rendered video will be created before approval. The run contains only outputs/output.md."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The PR replaces three separate billing settings pages with one guided flow.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The fixture PR description states this directly."
+    },
+    {
+      "claim": "The flow reuses the existing payment form and server mutation, and does not change pricing, permissions, invoices, or payment processing.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Each point appears verbatim in the fixture's final diff summary."
+    },
+    {
+      "claim": "Leadership should discuss adoption and rollout confidence after an internal-first, ten-percent rollout.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The fixture rollout notes directly specify internal enablement, then ten percent of eligible workspaces, and say the video should prepare leadership to discuss adoption and rollout confidence."
+    },
+    {
+      "claim": "The PR makes no measured speed claim.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The fixture review discussion says reviewers rejected faster-checkout language because the PR includes no performance measurements."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The fixture names but does not embed the three screenshots and logo, so production access must be verified after approval."
+    ],
+    "needs_review": [
+      "The user must approve or revise the audience assumptions, narrative, renderer, timing, and asset treatment."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The revised provenance assertion is meaningfully discriminating and the output satisfies it by separating code facts from user-provided narrative context and explicitly excluding unsupported framing."
+  }
+}

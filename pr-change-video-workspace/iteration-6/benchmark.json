@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "skill_name": "pr-change-video",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-08-09T17:46:33Z",
+    "evals_run": [
+      2
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+          "passed": true,
+          "evidence": "The Treatment section selects Executive and exposes editable Viewer knowledge, Takeaway, Technical depth, Emphasis, Exclusions, Tone, and Discussion framing. The leadership and adoption-and-rollout-confidence framing is taken directly from rollout notes; no benefit, motivation, tradeoff, risk, or impact is inferred from implementation facts."
+        },
+        {
+          "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+          "passed": true,
+          "evidence": "It recommends Remotion because the supplied approved screenshots, UI callouts, and rollout stages require editorial composition."
+        },
+        {
+          "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+          "passed": true,
+          "evidence": "The timed plan totals 78 seconds. It uses the available approved screenshots and Acme horizontal logo, preserves the logo aspect ratio, and explicitly avoids presenting chosen colors, fonts, spacing, or variants as Acme branding. No unsupported asset prerequisite is introduced."
+        },
+        {
+          "text": "The artifact preserves source meaning without adding recommendations, implications, next steps, or invitations to further discussion.",
+          "passed": true,
+          "evidence": "Every narration claim and source-facing treatment choice is directly grounded in the PR description, final diff summary, review discussion, assets, or rollout notes. The closing repeats the supplied adoption-and-rollout-confidence framing without adding a question, conclusion, completeness claim, recommendation, next step, or discussion invitation. The renderer recommendation and approval gate are expressly required by the task."
+        },
+        {
+          "text": "The approval packet states each claim once where practical and stays at or below 550 words.",
+          "passed": true,
+          "evidence": "The output contains 496 whitespace-delimited words. It has one compact treatment section and one combined timed-scene, narration, caption, visual, and provenance table. It does not repeat the scene sequence in a separate ledger, storyboard, or narration section; short on-screen restatements serve the production format."
+        },
+        {
+          "text": "The output stops before animation source creation or rendering.",
+          "passed": true,
+          "evidence": "The Approval section says production remains paused and no animation source or render has been created. The run contains only outputs/output.md."
+        }
+      ],
+      "notes": [
+        "The user must approve or revise the packet before production, as requested."
+      ]
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions, with all motivation, tradeoffs, and impact framing traced to provided context rather than inferred from code.",
+          "passed": true,
+          "evidence": "The plan selects Executive and exposes editable viewer knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion framing. Leadership and adoption-and-rollout-confidence framing is directly attributable to rollout notes, and no motivation, benefit, tradeoff, risk, or impact is inferred from code."
+        },
+        {
+          "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+          "passed": true,
+          "evidence": "It recommends Remotion because the supplied approved screenshots, UI callouts, and rollout stages call for editorial composition."
+        },
+        {
+          "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+          "passed": true,
+          "evidence": "The plan totals 75 seconds. It uses the available approved screenshots and Acme horizontal logo, preserves its aspect ratio, and does not invent Acme colors, fonts, spacing rules, or logo variants. No unsupported asset prerequisite is added."
+        },
+        {
+          "text": "The artifact preserves source meaning without adding recommendations, implications, next steps, or invitations to further discussion.",
+          "passed": true,
+          "evidence": "All video claims are direct restatements of the fixture. The close preserves the exact source-stated adoption-and-rollout-confidence framing without adding a question, conclusion, synthesized completeness claim, recommendation, next step, or invitation. The requested renderer recommendation and approval gate are task mechanics rather than additions to source meaning."
+        },
+        {
+          "text": "The approval packet states each claim once where practical and stays at or below 550 words.",
+          "passed": true,
+          "evidence": "The output contains 413 whitespace-delimited words. It consists of one treatment section and one combined timed-scene table, with no redundant ledger, storyboard, or narration section. Brief on-screen-text echoes are necessary production specifications."
+        },
+        {
+          "text": "The output stops before animation source creation or rendering.",
+          "passed": true,
+          "evidence": "The Approval section states that no animation source or render has been created, and the run contains only outputs/output.md."
+        }
+      ],
+      "notes": [
+        "The user must approve or revise the plan before production, as requested."
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}

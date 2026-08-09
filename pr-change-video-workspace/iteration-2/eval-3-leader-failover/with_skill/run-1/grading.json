@@ -1,0 +1,82 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+      "passed": true,
+      "evidence": "The evidence ledger accurately limits I1-I6 to the fixture's PR description and final diff summary. It separately attributes the implementer's expectation, TPM discussion framing, and review qualification to C1-C3 from the standup and final review. It explicitly says the context does not establish rollout order, dependencies beyond visible storage, interruption duration, or the next recovery slice, and therefore asks rather than invents answers. The plan rejects seamless, transparent, zero-downtime, and unnoticeable recovery claims. Renderer-fit judgments concern video-production primitives, not inferred motivation, benefit, risk, or evaluation of the implementation."
+    },
+    {
+      "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+      "passed": true,
+      "evidence": "The editable TPM tuning calls for runtime/protocol/storage boundaries, dependencies, rollout order, observable interruption, and the next recovery slice. The plan preserves unknown rollout details as questions and ends with the four discussion areas stated verbatim by the TPM in the fixture."
+    },
+    {
+      "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+      "passed": true,
+      "evidence": "The plan identifies persistent leader, follower, lease, event queue, vote, token, and storage objects whose state and relationships change, recommends Manim for continuous transformations, and explains that Remotion's card-oriented composition would make identity and the event-to-election-to-token sequence harder to track."
+    },
+    {
+      "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+      "passed": true,
+      "evidence": "Protocol steps 2-3 assign source, asset, caption, manifest, edit, and render work exclusively to the coding/rendering agent, while the review agent only inspects and compares artifacts and is explicitly prohibited from editing or rendering."
+    },
+    {
+      "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+      "passed": true,
+      "evidence": "Protocol step 4 sends clipping, contrast, typo, caption timing, missing-label, scene-duration, and transition corrections to the coding/rendering agent. Step 5 sends message, audience, emphasis, depth, order, claims, narration, renderer, duration, metaphor, visual direction, and unsupported-analysis changes to the user."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 13306,
+    "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The PR queues LeaseExpired after an elapsed lease deadline, elects a leader after quorum, uses increasing fencing tokens, and rejects stale-token writes.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "These claims match the fixture's final diff summary exactly."
+    },
+    {
+      "claim": "The PR does not reconstruct in-flight work or guarantee zero downtime or transparent recovery.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "These limits appear verbatim in the fixture's final diff summary and are reinforced by the final reviewer."
+    },
+    {
+      "claim": "The TPM wants dependencies, observable interruption, rollout order, and the next recovery slice discussed.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The fixture's TPM standup statement names those four topics."
+    },
+    {
+      "claim": "No animation source or render has been created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "Only outputs/output.md exists for the run, and its status states that no animation source or render has been created pending approval."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The supplied context does not prescribe rollout order, quantify interruption, identify dependencies beyond the storage adapter, or define the next recovery slice."
+    ],
+    "needs_review": [
+      "User approval is required for the audience tuning, message, boundaries, renderer, storyboard, narration, duration, and branding before production."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "The prompt explicitly requires stopping for approval, but no assertion checks that no production artifacts were created before approval. Add a separate approval-gate assertion."
+      }
+    ],
+    "overall": "The revised provenance assertion is meaningful and verifiable against the fixture. The remaining clear gap is an explicit approval-gate check."
+  }
+}

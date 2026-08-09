@@ -1,0 +1,77 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.",
+      "passed": true,
+      "evidence": "Implementation facts are stated from the diff/export; intent is attributed to the PR description; impact is attributed to the final review and task; visual framing is attributed to implementer notes. The early harmlessness claim is explicitly identified as conflicting with the final review. No unsupported motivation, tradeoff, or impact claim is introduced in the prose argument."
+    },
+    {
+      "text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+      "passed": true,
+      "evidence": "The rationale selects Manim because the persistent vector retains identity while length, capacity, backing buffer, pointer, and elements change, tracking the implementer notes' requested explanatory objects."
+    },
+    {
+      "text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+      "passed": true,
+      "evidence": "The brief exposes editable IC choices, the table supplies six timed scenes and full narration, the same text is explicitly designated for captions, and the renderer rationale is present."
+    },
+    {
+      "text": "The artifact adds no implications, conclusions, next steps, discussion prompts, or causal links that are absent from the supplied context.",
+      "passed": false,
+      "evidence": "The 0:56-1:16 visual says an illustrative buffer gains spare capacity and later appends occupy those cells. The fixture states geometric/normal growth but does not directly state this spare-capacity causal mechanism. Under the strict no-inference standard, this unsupported visual content fails the assertion."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 700 words.",
+      "passed": true,
+      "evidence": "The output is 453 words. Its short source-boundary paragraphs establish provenance and exclusions, while the scene table supplies production wording; limited repetition between those two functions is practical. There are no separate duplicate storyboard, narration, and caption sections."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "It explicitly states no animation or render has been created and production remains paused until approval; only the planning Markdown exists."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.8333333333
+  },
+  "claims": [
+    {
+      "claim": "The diff removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Matches the fixture's final diff."
+    },
+    {
+      "claim": "Repeated one-element batches forced exact growth and repeated copies, and removal restores amortized growth.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly supported by the fixture's final review."
+    },
+    {
+      "claim": "A growth event creates spare capacity that subsequent appends fill.",
+      "type": "factual",
+      "verified": false,
+      "evidence": "This visual mechanism is not stated in the supplied fixture; it is inferred from geometric growth."
+    },
+    {
+      "claim": "No animation or render has been created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "Only the approval-plan Markdown was produced."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "Remove the inferred spare-capacity visual or obtain direct supporting context."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "At 453 words, this is concise and practically non-repetitive. The integrated scene/narration/caption table is efficient. Its only substantive defect is the unsupported spare-capacity mechanism."
+  }
+}

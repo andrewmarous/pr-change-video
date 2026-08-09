@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "vector-reserve",
+  "prompt": "Create a 90-second IC-facing video for the synthetic GitHub PR export that fixes repeated vector reserve calls causing quadratic reallocations. The PR discussion contains an early explanation that conflicts with the final diff. Use the implementer notes for context. Stop after planning so I can approve it.",
+  "assertions": [
+    "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.",
+    "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+    "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+    "The artifact adds no implications, conclusions, next steps, discussion prompts, or causal links that are absent from the supplied context.",
+    "The output stops before animation source creation or rendering."
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "expectations": [
+    {
+      "text": "The output recommends the executive preset and exposes editable knowledge, takeaway, depth, emphasis, exclusions, tone, and discussion assumptions.",
+      "passed": true,
+      "evidence": "The plan explicitly recommends \"Audience preset: Executive\" and labels its fine-tuning fields editable. It separately provides assumed viewer knowledge, primary takeaway, technical depth, emphasis, exclusions, tone, and a discussion question, then states that these assumptions can all be changed before approval."
+    },
+    {
+      "text": "The output recommends Remotion because screenshots and editorial UI composition dominate the explanation.",
+      "passed": true,
+      "evidence": "The renderer decision selects Remotion and explains that the story is driven by \"UI screenshots, before/after comparison, stakeholder-impact text, and a staged rollout narrative,\" identifying these as editorial timeline-composition tasks."
+    },
+    {
+      "text": "The output targets no more than 90 seconds and uses supplied branding without inventing brand rules.",
+      "passed": true,
+      "evidence": "The plan targets and totals 85 seconds. Its branding section uses the supplied screenshots and Acme horizontal logo, preserves the logo aspect ratio, and explicitly says not to invent colors, fonts, logo variants, clear-space requirements, or other brand rules."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "The final approval gate states: \"No animation source, captions file, or render will be created until approval.\" The only delivered file is the planning document output.md; no animation source or rendered media is present."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The planned video is 85 seconds long.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The six storyboard durations are 12, 18, 15, 13, 15, and 12 seconds, which sum to 85 seconds and match the stated total."
+    },
+    {
+      "claim": "No animation source, captions file, or render was created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "The run contains only outputs/output.md, and that document ends at the approval gate."
+    },
+    {
+      "claim": "The PR evidence supports the listed implementation and rollout facts.",
+      "type": "factual",
+      "verified": false,
+      "evidence": "The output attributes claims to a PR description, final diff, review discussion, and rollout notes, but the source fixture and execution transcript were not available to the grader, so source fidelity cannot be independently checked."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The output says the described screenshots and logo assets must be confirmed accessible before production."
+    ],
+    "needs_review": [
+      "Confirm that all three screenshots and the approved logo are available and correspond to the final revision."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "The assertions do not check whether claims accurately reflect the supplied PR export and secondary context. Add a source-fidelity assertion that tests key facts and rejected claims against the fixture."
+      },
+      {
+        "assertion": "The output stops before animation source creation or rendering.",
+        "reason": "This checks the approval gate but not whether the plan clearly requests user approval of the renderer, narrative, and storyboard. Consider asserting those approval subjects directly."
+      }
+    ],
+    "overall": "The assertions discriminate basic workflow and treatment choices, but both outputs satisfy all four. Source fidelity and the completeness of the approval packet remain materially untested."
+  }
+}

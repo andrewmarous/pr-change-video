@@ -1,0 +1,95 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+      "passed": true,
+      "evidence": "Every behavior in the narration and visuals maps to the PR description or diff bullets. The only framing claim is the fixture-supported conflict between the implementer's unnoticeable-failover statement, the PR's explicit lack of transparent or zero-downtime guarantees, and the reviewer's warning against seamless terminology. The packet does not infer benefits, risks, causes, implications, conclusions, recommendations, next steps, questions, or discussion invitations from code."
+    },
+    {
+      "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+      "passed": true,
+      "evidence": "The TPM treatment emphasizes runtime/protocol, election, storage, and recovery boundaries. Its final scene neutrally presents the exact TPM-supplied coordination topics: dependencies, observable interruption, rollout order, and the next recovery slice. It does not invent an assessment or answer."
+    },
+    {
+      "text": "The artifact includes boundaries, dependencies, rollout, interruption, or discussion points only when explicitly present in the supplied context and adds no next steps or calls to discussion.",
+      "passed": true,
+      "evidence": "System boundaries are sourced from the PR, and all four TPM topics come directly from the standup transcript. The source-boundary paragraph says the sources provide no answers, while the last scene shows attributed neutral labels without questions, answers, proposed actions, next steps, or a call to discussion."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 550 words.",
+      "passed": true,
+      "evidence": "The packet is 539 words. The source-boundary section states the conflict and missing context once; the timed table then contains the actual narration and production specification. Repeated short terms in narration, visuals, and citations serve distinct production and provenance functions rather than restating explanatory sections."
+    },
+    {
+      "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+      "passed": true,
+      "evidence": "The recommendation names persistent runtime, protocol, follower, lease, vote, term, token, and storage objects whose sourced states and relationships change. It selects Manim for continuity and explains that Remotion's editorial cuts are weaker for following that protocol sequence."
+    },
+    {
+      "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+      "passed": true,
+      "evidence": "The post-approval protocol assigns source, asset, caption, manifest edits, and every render exclusively to coding/rendering. Review only verifies the MP4 against the frozen packet and is explicitly prohibited from editing or rendering."
+    },
+    {
+      "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+      "passed": true,
+      "evidence": "Clipping, omitted approved content, and timing drift go to coding/rendering for correction and rerendering. Frozen-content or creative-direction changes go to the user."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 3649,
+    "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The PR queues LeaseExpired, elects after quorum, uses monotonically increasing fencing tokens, and rejects stale-token writes.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The timed scenes match final diff bullets 1-4 in the fixture."
+    },
+    {
+      "claim": "The PR does not reconstruct in-flight work or guarantee transparent or zero-downtime recovery.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The narration matches final diff bullets 5-6 and the final review's scope qualification."
+    },
+    {
+      "claim": "The TPM identified dependencies, observable interruption, rollout order, and the next recovery slice as needed information.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The closing narration closely restates the TPM's standup sentence."
+    },
+    {
+      "claim": "Production is paused for approval.",
+      "type": "process",
+      "verified": true,
+      "evidence": "Only outputs/output.md exists in the run, and it states that production is paused for approval."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The supplied sources do not answer the TPM's four coordination topics."
+    ],
+    "needs_review": [
+      "The user must approve or revise the packet before production."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "The packet passes at 539 words but has only 11 words of margin under the ceiling. If stable compliance across renderers or formatting changes matters, trim a few production-detail words to reduce brittleness."
+      },
+      {
+        "reason": "Add a direct assertion for the approval stop; the output complies, but the current assertions do not score the absence of pre-approval source or rendered artifacts."
+      }
+    ],
+    "overall": "The packet now satisfies source immutability, practical non-repetition, and the 550-word ceiling. It is detailed but each section has a distinct approval or production purpose."
+  }
+}

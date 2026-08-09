@@ -1,0 +1,70 @@
+{
+  "expectations": [
+    {
+      "text": "The output treats the final PR diff as authoritative and identifies the early discussion as contradicted.",
+      "passed": true,
+      "evidence": "The source interpretation says, 'The final diff is the governing evidence,' identifies the early allocator-reuse view, and states that it is contradicted by the final implementation rationale and review result."
+    },
+    {
+      "text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+      "passed": true,
+      "evidence": "The 'Why Manim' section says viewers must track the same vector as length and capacity change, watch the backing allocation move, and see existing elements copied; the visual direction also requires a stable vector handle while buffers transform."
+    },
+    {
+      "text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+      "passed": true,
+      "evidence": "The creative brief exposes changeable IC assumptions, the storyboard and full narration are timed across seven segments, the caption plan specifies timing alignment and caption treatment, and the Manim rationale is explicit."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "It opens with, 'I have not created animation code or rendered the video,' and closes by waiting for approval before animation or rendering. The only output file is the planning document."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The final diff removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.",
+      "type": "factual",
+      "verified": false,
+      "evidence": "The output presents these exact lines as source evidence, but the underlying synthetic PR export is absent from the grading inputs and cannot be independently checked."
+    },
+    {
+      "claim": "Repeated one-element exact growth produces quadratic cumulative copying.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The storyboard shows each incremental step copying all prior elements and summarizes the series as `1 + 2 + 3 + ...`, which supports the stated complexity for that scenario."
+    },
+    {
+      "claim": "No animation code or rendered video was created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "The run contains only `outputs/output.md`, and that file is consistently framed as an approval-stage planning draft."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "The user must approve or revise the IC assumptions, renderer, story, excluded claims, closing prompt, and visual system before production."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+        "reason": "A loose caption-plan paragraph passes even though it lacks caption-level cue timings. If cue-level timing is an intended deliverable, state that explicitly in the assertion."
+      },
+      {
+        "assertion": "The output treats the final PR diff as authoritative and identifies the early discussion as contradicted.",
+        "reason": "Include the synthetic PR and context fixture in grading inputs so the grader can verify that the claimed contradiction is faithful rather than merely present."
+      }
+    ],
+    "overall": "The baseline substantively passes all current assertions. The eval is not very discriminating between the skill and baseline; requiring cue-level captions and source-grounded evidence references would better test the skill's added structure."
+  }
+}

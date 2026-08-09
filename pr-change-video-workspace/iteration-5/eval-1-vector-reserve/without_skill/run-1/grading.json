@@ -1,0 +1,77 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the final PR diff only for implementation facts, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and identifies the early discussion as contradicted.",
+      "passed": true,
+      "evidence": "The evidence boundary uses the final diff for the code change, attributes evaluated behavior to the final review, and identifies the early allocator-reuse claim as conflicting. Intent and growth behavior in the scenes are sourced to the PR description/export rather than inferred from the diff."
+    },
+    {
+      "text": "The output recommends Manim because persistent memory, length, capacity, buffers, and copies evolve over time.",
+      "passed": true,
+      "evidence": "The renderer rationale selects Manim because one vector retains identity while its length, capacity, backing buffer, and copied elements change, matching the implementer notes."
+    },
+    {
+      "text": "The output exposes editable IC audience assumptions and includes a timed storyboard, narration, captions, and renderer rationale.",
+      "passed": true,
+      "evidence": "It exposes editable IC assumptions, supplies the renderer rationale, and uses one six-row timed table for storyboard visuals, complete narration, captions, and source attribution."
+    },
+    {
+      "text": "The artifact adds no implications, conclusions, next steps, discussion prompts, or causal links that are absent from the supplied context.",
+      "passed": true,
+      "evidence": "The artifact stays within the supplied intent, reviewed failure/result, task-stated quadratic reallocations, exact diff, documented growth behavior, and unchanged API. It adds neither a spare-capacity mechanism nor an unsupported dependency or discussion prompt. Approval is requested because the user explicitly required the stop."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 550 words.",
+      "passed": true,
+      "evidence": "The file is 393 words. It uses one compact evidence-boundary section and one integrated storyboard/narration/caption table. Repeated references are limited to what is needed to distinguish source handling from final video wording."
+    },
+    {
+      "text": "The output stops before animation source creation or rendering.",
+      "passed": true,
+      "evidence": "It explicitly says no animation or render has been created and production remains paused until approval; only Markdown planning output exists."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "claims": [
+    {
+      "claim": "The final diff removes `items.reserve_exact(batch.len())` and retains `items.extend(batch)`.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Matches the supplied final diff."
+    },
+    {
+      "claim": "Repeated one-element batches forced exact growth and repeated copies, and removal restores amortized growth.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Matches the supplied final review and is attributed to it."
+    },
+    {
+      "claim": "Exact reserve was intended to reduce allocations.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Directly stated in the supplied PR description."
+    },
+    {
+      "claim": "The early harmlessness claim conflicts with the final review.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The supplied early and final-review statements directly conflict over whether the old call caused harmful repeated work."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [
+      "User approval is required before production."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The baseline is especially concise and meets every current assertion. Its combined storyboard, narration, and caption format avoids practical repetition while retaining adequate source boundaries."
+  }
+}

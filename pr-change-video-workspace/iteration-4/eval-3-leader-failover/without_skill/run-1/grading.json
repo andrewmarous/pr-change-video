@@ -1,0 +1,92 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+      "passed": true,
+      "evidence": "I1-I6 reproduce only the fixture's implementation behavior and limits, while C1-C3 reproduce only the standup and final-review framing. The prompt directly establishes that the automatic-recovery suggestion is unimplemented. The plan rejects seamless, transparent, zero-downtime, and unnoticeable recovery as behavior and adds no unsupported motivation, benefit, risk, interpretation, implication, conclusion, recommendation, next step, question, or invitation."
+    },
+    {
+      "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+      "passed": true,
+      "evidence": "The compact TPM treatment shows the runtime, protocol, and storage sequence and presents the exact source-stated concerns about dependencies, observable interruption, rollout order, and the next recovery slice without adding analysis."
+    },
+    {
+      "text": "The artifact includes boundaries, dependencies, rollout, interruption, or discussion points only when explicitly present in the supplied context and adds no next steps or calls to discussion.",
+      "passed": true,
+      "evidence": "Implementation boundaries are taken from the PR and all four coordination concerns are taken from C2. The plan explicitly declines to invent missing details, recommendations, conclusions, or calls to action, and the final scene uses neutral labels without questions or answers."
+    },
+    {
+      "text": "The approval packet states each claim once where practical and stays at or below 700 words.",
+      "passed": true,
+      "evidence": "The packet is 453 words. Reappearance of implementation facts in the timed scene narration is practically necessary because the evidence boundary documents provenance while the table specifies the actual video; outside that functional pairing, the packet avoids separate summary, omission, and checklist sections that would restate the same claims."
+    },
+    {
+      "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+      "passed": true,
+      "evidence": "It selects Manim based on stable leader, follower, lease, event, vote, token, and storage identities changing through the sequence, and explains that Remotion's editorial composition is less direct for preserving those identities."
+    },
+    {
+      "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+      "passed": true,
+      "evidence": "The production paragraph gives coding/rendering every edit and render and restricts review to MP4 verification, explicitly stating that review never edits or renders."
+    },
+    {
+      "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+      "passed": true,
+      "evidence": "Small implementation mismatches return to coding/rendering for correction and rerendering, while higher-level changes return to the user."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 3131,
+    "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The PR implements queued LeaseExpired handling, quorum election, increasing fencing tokens, and stale-write rejection.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The evidence boundary and timed scenes match the fixture's final diff summary."
+    },
+    {
+      "claim": "In-flight work is not reconstructed, and zero downtime or transparent recovery is not guaranteed.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "These limits are stated directly by the PR fixture and reinforced by the final review."
+    },
+    {
+      "claim": "The TPM named dependencies, observable interruption, rollout order, and the next recovery slice as needed information.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "This matches the TPM's standup statement."
+    },
+    {
+      "claim": "No animation or render has been created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "Only outputs/output.md exists and begins by saying no animation or render has been created."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The source does not supply rollout order, interruption duration, a dependency list, or a next-slice definition."
+    ],
+    "needs_review": [
+      "The user must approve the treatment and frozen production choices before rendering."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add an explicit assertion for the required approval stop; the artifact complies, but the current eval does not score it."
+      }
+    ],
+    "overall": "The 453-word packet is source-faithful, practical, and non-repetitive. Its limited repetition separates provenance documentation from the executable timed narration."
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "expectations": [
+    {
+      "text": "The output uses the PR only for implemented behavior, uses provided context for motivation and tradeoffs, introduces no inferred argumentative claims, and rejects seamless or transparent recovery claims.",
+      "passed": true,
+      "evidence": "I1-I6 reproduce only the fixture's PR behavior and limits. C1-C3 separately reproduce the standup and final-review framing. The apparent conflict is explicitly supplied by the eval prompt and fixture review, not inferred from code. The plan rejects seamless, transparent, zero-downtime, and unnoticeable recovery as implemented behavior and adds no unsupported causal link, interpretation, implication, conclusion, recommendation, next step, question, or invitation. Renderer judgments concern production primitives rather than the change's motivation or merit."
+    },
+    {
+      "text": "The output uses a TPM treatment emphasizing boundaries, dependencies, rollout risk, interruption, and discussion points.",
+      "passed": true,
+      "evidence": "The treatment visualizes runtime, protocol, and storage boundaries and presents dependencies, observable interruption, rollout order, and the next recovery slice as neutral source-stated TPM concerns. It does not invent a dependency list, rollout sequence, duration, or recovery scope."
+    },
+    {
+      "text": "The artifact includes boundaries, dependencies, rollout, interruption, or discussion points only when explicitly present in the supplied context and adds no next steps or calls to discussion.",
+      "passed": true,
+      "evidence": "Runtime/protocol/storage boundaries come directly from I1-I4. The four TPM concerns are quoted from C2 and shown as labels, not converted into questions, answers, recommendations, next steps, or a call to discussion. The output explicitly says the sources supply no rollout order, interruption duration, dependency list, or next-slice definition and supplies none."
+    },
+    {
+      "text": "The renderer recommendation is based on explanatory primitives and explains why the alternative is weaker.",
+      "passed": true,
+      "evidence": "The renderer section names persistent leader, follower, lease, event, vote, token, and storage objects, selects Manim for continuous identity-preserving transformations, and explains that Remotion cards and cuts are less direct for tracking those objects through successive states."
+    },
+    {
+      "text": "The output assigns all edits and renders to the coding/rendering agent and only verification to the review agent.",
+      "passed": true,
+      "evidence": "The post-approval protocol assigns all source, asset, caption, manifest, media editing, and rendering actions to the coding/rendering agent. It limits the review agent to MP4 verification and explicitly prohibits review from editing or rendering."
+    },
+    {
+      "text": "The output routes small implementation mismatches to the coding/rendering agent and higher-level changes to the user.",
+      "passed": true,
+      "evidence": "Clipping, typos, missing approved content, caption drift, and timing errors return to coding/rendering for correction and rerender. Frozen-content or creative-direction changes, including any analysis, implication, conclusion, recommendation, next step, or discussion prompt, return to the user."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 6832,
+    "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The PR implements queued LeaseExpired handling, quorum election, increasing fencing tokens, and stale-token rejection.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "I1-I4 and the timed narrative match the fixture's final diff summary."
+    },
+    {
+      "claim": "The PR does not reconstruct in-flight work or guarantee zero downtime or transparent recovery.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "I5-I6 match the fixture's final diff summary, and the seamless qualification is reinforced by the final reviewer."
+    },
+    {
+      "claim": "The TPM identified dependencies, observable interruption, rollout order, and the next recovery slice as information the team needs.",
+      "type": "factual",
+      "verified": true,
+      "evidence": "This narration is a close restatement of the TPM's standup sentence in the fixture."
+    },
+    {
+      "claim": "No animation source or render has been created.",
+      "type": "process",
+      "verified": true,
+      "evidence": "The run contains only outputs/output.md and explicitly stops awaiting approval."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The fixture does not state a rollout order, interruption duration, dependency list, or definition of the next recovery slice."
+    ],
+    "needs_review": [
+      "The user must approve the frozen content and production choices before rendering."
+    ],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "reason": "Add an explicit approval-gate assertion; the prompt requires a stop before production, but the assertions still do not score it directly."
+      },
+      {
+        "reason": "Consider a succinctness assertion or human rating. This plan is accurate and navigable, but at 982 words it repeats the same scope in Treatment, Content ledger, Contradictions, Omissions, Timed narrative, Storyboard, and Approval checklist. The baseline communicates the same required contract in 565 words."
+      }
+    ],
+    "overall": "The output is provenance-safe and thorough, but not especially succinct. The ledger adds useful auditability; the separate omissions section and some repeated scope statements could be compressed without weakening traceability."
+  }
+}
