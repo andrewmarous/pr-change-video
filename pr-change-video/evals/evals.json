@@ -7,7 +7,7 @@
       "expected_output": "An approval packet that treats the final PR diff as authoritative, recommends Manim based on evolving memory and capacity state, exposes IC assumptions, and performs no production work before approval.",
       "files": ["evals/files/vector-reserve-pr.md"],
       "expectations": [
-        "The workflow runs the bundled requirements checker before creating the workspace, treats missing ffmpeg, ffprobe, or a nonempty ELEVENLABS_API_KEY as a blocker, never prints the key value, stops on failed required checks without installing dependencies, and defers renderer-specific checks until a renderer is approved.",
+        "The workflow runs the bundled requirements checker before creating the workspace, probes ffmpeg and ffprobe with -version, treats either missing command or a nonempty ELEVENLABS_API_KEY as a blocker, never prints the key value, retries an otherwise isolated GitHub-authentication failure by requesting an outside-sandbox run of the same checker before reporting the user as unauthenticated, stops on confirmed failed required checks without installing dependencies, and defers renderer-specific checks until a renderer is approved.",
         "The workflow gathers the PR diff, reviews, inline comments, and general discussion.",
         "The plan distinguishes implementation facts from context-supported narrative claims, includes no inferred argumentative claims, and calls out the conflicting early explanation.",
         "The renderer choice is Manim because persistent conceptual objects transform over time, not merely because the topic is technical.",
@@ -15,7 +15,8 @@
         "The artifact adds no implications, conclusions, next steps, discussion prompts, or causal links that are absent from the supplied context.",
         "The approval packet states each claim once where practical and stays at or below 550 words.",
         "No animation source or render is created before explicit user approval.",
-        "The plan always includes ElevenLabs narration with exact spoken-only text, voice and model IDs, settings and pronunciation controls, exact character count, documented credit rate and estimated credits, validates the one-request model limit, and authorizes no paid preview or generation before approval."
+        "The plan always includes ElevenLabs narration with exact spoken-only text, voice and model IDs, settings and pronunciation controls, exact character count, documented credit rate and estimated credits, validates the one-request model limit, and authorizes no paid preview or generation before approval.",
+        "The planning agent paginates the authenticated GET /v2/voices inventory, proposes only an exact voice ID and name pair returned for that account, verifies it with a filtered v2 lookup, and rejects unavailable voices and legacy aliases whose v1 response identifies a different voice; production repeats the filtered availability check before spending credits."
       ]
     },
     {
@@ -47,8 +48,23 @@
         "The renderer recommendation is justified by the planned explanatory primitives and includes why the alternative is weaker.",
         "The coding/rendering agent exclusively owns source changes and renders, while the review agent exclusively verifies.",
         "The review agent extracts at least one screenshot from every scene in the final MP4, passes the images as multimodal LLM context, and records scene-level reasoning about plan fidelity, alignment, spacing, hierarchy, balance, consistency, contrast, legibility, and safe margins.",
+        "For Manim output, production shapes each ordinary phrase as one Pango text object at a substantially larger font size, uniformly scales that whole object down to its approved final size, inspects representative text in a native-resolution rendered frame, and review independently checks final-MP4 frames for font fallback, per-character text layout, uneven optical spacing or kerning, unnecessary monospace outside code or alignment-dependent values, and small-type rasterization defects; typography defects return as bounded corrections that preserve approved wording and visual direction.",
         "Small implementation mismatches return to the coding/rendering agent; higher-level changes return to the user.",
         "Narrated delivery is marked automated review passed and user audiovisual approval pending; mechanical local fixes reuse cached narration, generation-affecting changes require a new estimate and approval, and spoken-wording changes restart planning."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Use the vector-reserve PR to test Manim glyph rendering. I explicitly want a silent partial workflow: stop after the first render and one independent review pass, make no narration request, and do not correct or rerender after review.",
+      "expected_output": "An approval-gated Manim workflow that produces one clearly labeled silent intermediate MP4, performs one independent scene-complete review, and stops without narration, correction, rerendering, or final-delivery claims.",
+      "files": ["evals/files/vector-reserve-pr.md"],
+      "expectations": [
+        "The explicit partial-workflow request is honored only at the supported first-render-and-review boundary; planning still stops for approval before source creation.",
+        "Requirements checking uses --silent-preview, does not require or expose ELEVENLABS_API_KEY, and checks only the approved Manim toolchain before production.",
+        "Planning omits voice discovery, credit estimation, and approved-narration.json, states that narration and captions are absent, and uses approved estimated scene timings.",
+        "Production creates exactly one silent MP4 with no audio stream or caption artifacts and labels the manifest and artifact silent intermediate—not final delivery.",
+        "The independent reviewer extracts and inspects scene-complete frames from that MP4, records typography and plan-fidelity findings, and stops after the first review pass even if corrections are identified.",
+        "No narration request, correction loop, rerender, final audiovisual approval, or final-delivery claim occurs."
       ]
     }
   ]

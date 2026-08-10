@@ -8,18 +8,23 @@ Check the local capabilities needed by pr-change-video without changing the syst
 
 Options:
   --renderer <remotion|manim>  Check dependencies for an approved renderer
+  --silent-preview             Do not require ElevenLabs for an explicitly requested silent partial run
   --json                       Emit machine-readable JSON
   --help                       Show this help
 `;
 
 function parseArgs(args) {
-  const options = { renderer: null, json: false };
+  const options = { renderer: null, silentPreview: false, json: false };
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--help") return { help: true };
     if (arg === "--json") {
       options.json = true;
+      continue;
+    }
+    if (arg === "--silent-preview") {
+      options.silentPreview = true;
       continue;
     }
     if (arg === "--renderer") {
@@ -38,15 +43,16 @@ function parseArgs(args) {
   return options;
 }
 
-function runChecks(renderer) {
+function runChecks(renderer, silentPreview) {
   const checks = [
     checkCommand("node"),
     checkCommand("gh"),
     checkGitHubAuth(),
-    checkCommand("ffmpeg"),
-    checkCommand("ffprobe"),
-    checkEnvironmentVariable("ELEVENLABS_API_KEY"),
+    checkCommand("ffmpeg", { args: ["-version"] }),
+    checkCommand("ffprobe", { args: ["-version"] }),
   ];
+
+  if (!silentPreview) checks.push(checkEnvironmentVariable("ELEVENLABS_API_KEY"));
 
   if (renderer === "remotion") {
     checks.push(checkCommand("npm"));
@@ -78,10 +84,11 @@ if (options.help) {
   process.exit(0);
 }
 
-const checks = runChecks(options.renderer);
+const checks = runChecks(options.renderer, options.silentPreview);
 const report = {
   ok: checks.every((check) => check.ok || !check.required),
   renderer: options.renderer,
+  silentPreview: options.silentPreview,
   checks,
 };
 

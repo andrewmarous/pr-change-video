@@ -124,7 +124,9 @@ Use only the parts of this compact narrative arc that the sources support:
 
 ## ElevenLabs narration
 
-Own the exact spoken-only text and all generation-affecting choices. Do not include timestamps, speaker labels, scene labels, or production directions in the submitted text. Save the approved generation inputs as `plan/approved-narration.json` with the fields consumed by `scripts/narration-request.mjs`; derive its `text` by concatenating the timed-scene narration in scene order exactly once.
+For a complete or narrated workflow, own the exact spoken-only text and all generation-affecting choices. Do not include timestamps, speaker labels, scene labels, or production directions in the submitted text. Save the approved generation inputs as `plan/approved-narration.json` with the fields consumed by `scripts/narration-request.mjs`; derive its `text` by concatenating the timed-scene narration in scene order exactly once.
+
+When the user explicitly requests a silent first-render-and-review partial workflow, omit voice discovery, narration authorization, spoken text, credit estimation, and `approved-narration.json`; plan estimated scene timing only and state that the intermediate artifact has no captions or audio.
 
 Before approval, use only free read-only metadata requests to establish:
 
@@ -134,6 +136,23 @@ Before approval, use only free read-only metadata requests to establish:
 - exact submitted character count;
 - documented credit-per-character rate or model multiplier and its source; and
 - estimated request credits.
+
+Discover voices from the authenticated account, not from documentation examples,
+search results, remembered default IDs, or an unauthenticated catalog. Enumerate
+`GET /v2/voices` with the configured API key, `page_size=100`, and every returned
+`next_page_token` until `has_more` is false. Recommend only an exact voice ID and
+name pair present in those results. Treat the returned inventory as the authority
+for what this account can use; a legacy or default voice mentioned elsewhere is
+not available merely because `GET /v1/voices/{voice_id}` returns metadata.
+
+After choosing a voice, query `GET /v2/voices` with that `voice_ids` filter and
+require exactly one result whose `voice_id` and `name` match the chosen pair. A
+`GET /v1/voices/{voice_id}` response whose body contains a different ID is a
+legacy alias, not successful verification. Do not approve or generate with an
+absent, ambiguous, or aliased voice. Recommend another voice from the authenticated
+inventory instead. Record the inventory endpoint, the verification endpoint, and
+the verified ID/name pair in the approval packet without recording the API key or
+authentication header.
 
 Do not generate previews, samples, partial narration, or tests. If the applicable rate cannot be established, state that it is unknown and keep generation blocked. If the text exceeds the selected model's limit, shorten the plan and request approval again; never plan multiple speech requests.
 
@@ -155,9 +174,9 @@ Write `plan/approval-packet.md` with this structure:
 - Renderer rationale and rejected alternative:
 - Target duration:
 - Visual system and brand treatment:
-- Narration: ElevenLabs
-- Narration authorization: voice ID; model ID and settings; pronunciation dictionary ID/version or none; exact spoken character count; documented credit rate and source; estimated credits; model request limit; one full-script request
-- Timing policy: global scene padding and any per-scene overrides or explicit silent intervals
+- Narration: ElevenLabs; or, only for an explicitly requested silent first-render-and-review partial workflow, none—silent intermediate
+- Narration authorization: for narrated runs, authenticated-inventory-verified voice ID and name; voice inventory and filtered-verification endpoints; model ID and settings; pronunciation dictionary ID/version or none; exact spoken character count; documented credit rate and source; estimated credits; model request limit; one full-script request. Omit for a silent partial workflow.
+- Timing policy: alignment-driven timing for narration, or estimated scene timing for a silent partial workflow; global scene padding and any per-scene overrides or explicit silent intervals
 
 ## Source boundaries
 - Include only material contradictions, omissions, or gaps that the user must see before approval.

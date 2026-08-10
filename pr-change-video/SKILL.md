@@ -36,7 +36,14 @@ Support these user controls:
 - Duration: 90 seconds by default; require explicit approval to exceed 120 seconds
 - Brand treatment: use supplied repository or company assets; otherwise use the restrained fallback system in `references/production.md`
 
-Always generate ElevenLabs narration. Use one full-script timestamp-enabled speech request per approved generation attempt and synchronize scenes and captions locally from the returned alignment.
+Generate ElevenLabs narration for complete workflows. Use one full-script timestamp-enabled speech request per approved generation attempt and synchronize scenes and captions locally from the returned alignment.
+
+Honor a partial-workflow boundary only when the user explicitly requests one of these two endpoints:
+
+- **Plan submission:** deliver the approval packet and stop before production.
+- **First render and review:** after approval, produce exactly one render, perform exactly one independent review pass, deliver those intermediate artifacts, and stop without corrections or final audiovisual approval. If the user explicitly requests this endpoint as a silent visual or typography test, omit ElevenLabs discovery, authorization, generation, narration artifacts, captions, audio, and muxing; use the approved estimated scene timings and mark the MP4 and manifest `silent intermediate—not final delivery`.
+
+Do not infer a partial boundary from phrases such as “quick,” “preview,” or “draft.” A partial run still requires planning approval before source creation, preserves all evidence and role boundaries, and may stop only at one of the two endpoints above.
 
 ## Evidence boundaries
 
@@ -56,7 +63,15 @@ Surface material contradictions in the approval packet. Never silently turn impl
 
 ### 0. Check requirements
 
-Resolve this skill's installed directory and run `node <skill-directory>/scripts/check-requirements.mjs --json`. Require a nonempty `ELEVENLABS_API_KEY`; the checker reports only whether it is set and never its value. Treat a nonzero exit as a blocker and report the failed checks without attempting to install or modify dependencies. Warnings are non-blocking.
+Resolve this skill's installed directory and run `node <skill-directory>/scripts/check-requirements.mjs --json`. For an explicitly requested silent first-render-and-review run, add `--silent-preview`; otherwise require a nonempty `ELEVENLABS_API_KEY`. The checker reports only whether the key is set and never its value. Treat a nonzero exit as a blocker and report the failed checks without attempting to install or modify dependencies. Warnings are non-blocking.
+
+If the only failed required check is GitHub authentication, do not immediately
+tell the user that they are unauthenticated. The sandbox may prevent `gh` from
+reading credentials that are available on the host. Request permission to rerun
+the same requirements-checker command outside the sandbox. Continue when that
+host-level check succeeds; report an authentication blocker only when the
+outside-sandbox check also fails. Do not expose tokens or credential contents in
+either attempt.
 
 After the user approves a renderer, run the checker again with `--renderer remotion` or `--renderer manim` before production. Do not check both renderer toolchains or require an unselected renderer.
 
@@ -86,7 +101,7 @@ Give the planning agent:
 
 Tell it to save the evidence ledger and approval packet in the workspace. The planning agent must inspect the PR description, commits, changed files, full diff, reviews, inline review comments, and general discussion. It must inspect relevant repository files when the diff alone is insufficient.
 
-Require `plan/approved-narration.json`; it contains the exact spoken-only generation inputs and no API key.
+Require `plan/approved-narration.json`; it contains the exact spoken-only generation inputs and no API key. For an explicitly requested silent first-render-and-review run, omit that file and voice metadata; instead record `Narration: none—silent intermediate` and estimated scene timings in the packet.
 
 ### 3. Stop for user approval
 
@@ -99,7 +114,13 @@ Present the complete approval packet. Explicitly call out:
 - duration; and
 - brand treatment.
 
-Call out the exact spoken text, voice and model choices, pronunciation controls, character count, documented credit rate, estimated credits, and model request limit. Keep audio and video encoding details out of the packet unless the user asks. Approval authorizes one generation attempt at the stated estimate; if the rate is unknown, do not guess or proceed.
+For narrated runs, call out the exact spoken text, voice and model choices, pronunciation controls, character count, documented credit rate, estimated credits, and model request limit. For an explicitly requested silent run, state that no speech request, captions, or audio will be produced. Keep audio and video encoding details out of the packet unless the user asks. Approval authorizes one generation attempt at the stated estimate; if the rate is unknown, do not guess or proceed.
+
+For the voice choice, require an exact ID and name returned by the configured
+account's fully paginated authenticated `GET /v2/voices` inventory and confirmed
+by a filtered v2 lookup. Documentation examples, remembered default IDs, and
+legacy aliases are not evidence that a voice is available to the account. Reject
+any v1 lookup that returns a different ID from the requested one.
 
 Keep the approval packet compact. The evidence ledger is a background audit artifact; do not copy it into the approval packet. State each source claim, boundary, and production decision once. Do not repeat scene claims in a summary, separate narration section, exclusions list, or checklist.
 
@@ -111,13 +132,17 @@ Approval freezes the source-derived content, audience treatment, storyboard, spo
 
 After approval, give the coding/rendering agent only the evidence it needs, the frozen approval packet, brand assets, `references/production.md`, and the workspace path. It owns all animation source changes and rendering commands.
 
-Require it to render an MP4 and save a production manifest. Require one approved full-script generation or reuse of an exact cached match, then local timing and muxing. A source-only result is incomplete unless a missing dependency or environment restriction makes rendering impossible; report that blocker precisely.
+Require it to render an MP4 and save a production manifest. For narrated runs, require one approved full-script generation or reuse of an exact cached match, then local timing and muxing. For an approved silent partial run, render from estimated scene timings with no narration call, captions, audio, or muxing, and label all outputs as intermediate. A source-only result is incomplete unless a missing dependency or environment restriction makes rendering impossible; report that blocker precisely.
+
+Immediately before the billable request, require production to repeat the
+filtered authenticated v2 lookup and stop if the approved ID/name pair is no
+longer available.
 
 ### 5. Spawn the review agent
 
 Give the review agent read-only responsibility for the frozen approval packet, production manifest, source, and render. It follows `references/review.md`, extracts a screenshot from every scene (plus additional frames for materially different states), includes those images as context in its multimodal review request, evaluates the rendered composition against the plan and design-quality criteria, and writes a review report with scene-level evidence.
 
-If automated review passes, present the final video for user audiovisual approval and keep the workflow open. If it has a small implementation mismatch, the review agent sends a precise correction request to the existing coding/rendering agent. That agent changes the source and rerenders; the review agent then verifies the new render.
+At an explicitly requested first-render-and-review boundary, write and deliver the review report after this first pass regardless of its result, then stop; report identified mismatches without starting corrections and do not call the artifact final. Otherwise, if automated review passes, present the final video for user audiovisual approval and keep the workflow open. If it has a small implementation mismatch, the review agent sends a precise correction request to the existing coding/rendering agent. That agent changes the source and rerenders; the review agent then verifies the new render.
 
 Local timing, caption, silence, level, fade, and mux corrections reuse the narration and stay in the loop. A voice, model, delivery, or pronunciation change requires a fresh estimate and approval before one new full-script request. Any spoken-wording change invalidates approval and restarts workflow step 1 in a new workspace, then reruns planning with the prior packet, artifacts, and final-video feedback as context. Other frozen creative changes also return to the user.
 

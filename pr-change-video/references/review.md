@@ -36,8 +36,8 @@ Verify:
 1. **Specification:** source-derived content, audience treatment, renderer, visual direction, and scene order match the approved packet.
 2. **Timing:** total duration and scene pacing match the plan; text and visuals allow the narration time specified.
 3. **Claim fidelity:** implementation facts match the PR; all motivation, rationale, tradeoffs, intended impact, risks, conclusions, next steps, discussion prompts, and argumentative framing are directly supported by user-provided context; qualifications and caveats remain intact.
-4. **Visual correctness and design quality:** every scene matches its approved composition and has intentional alignment, spacing, hierarchy, balance, consistency, contrast, legibility, and safe margins; there is no clipping, overlap, misaligned text or objects, accidental blank frame, broken asset, discontinuity, or misleading transformation.
-5. **Captions and narration:** the spoken text is byte-for-byte unchanged, captions preserve every spoken word and are synchronized, scene timing follows the returned alignment, and explicit silence and padding are preserved.
+4. **Visual correctness and design quality:** every scene matches its approved composition and has intentional alignment, spacing, hierarchy, balance, consistency, contrast, legibility, and safe margins; there is no clipping, overlap, misaligned text or objects, accidental blank frame, broken asset, discontinuity, or misleading transformation. Inspect typography in final-MP4 frames at native delivery resolution: flag unintended font fallback, visibly uneven kerning or optical spacing, ordinary phrases built from individually positioned glyphs, unnecessary monospace outside literal code or alignment-dependent values, and small text whose stems or spacing degrade after rasterization. For defective Manim prose, confirm from the source and manifest that production shaped the complete phrase as one Pango text object at 2–4 times its intended font size and uniformly scaled the whole object down; do not recommend LaTeX as the default prose workaround.
+5. **Captions and narration:** for narrated output, the spoken text is byte-for-byte unchanged, captions preserve every spoken word and are synchronized, scene timing follows the returned alignment, and explicit silence and padding are preserved. For an approved silent partial output, verify that no captions or audio stream exist, estimated scene timings match the packet, and the manifest labels the artifact intermediate.
 6. **Technical delivery:** the MP4 is decodable and the manifest accurately describes it. For narrated output, verify one audio stream is present, durations and muxing are coherent, and mechanical loudness and clipping checks pass.
 
 Automated review is mechanical. Do not claim to assess pronunciation, delivery, emotion, naturalness, or subjective voice quality. Those remain for the user's final-video review.
@@ -53,6 +53,7 @@ Reject synthesized completeness statements such as “no other conflict exists.�
 An in-scope small correction makes the implementation match an already approved decision. Examples:
 
 - repair clipping, overlap, contrast, or a missing asset
+- repair rendered typography with uneven optical spacing, unintended font fallback, unnecessary monospace, or illegible small text while preserving the approved wording and visual direction
 - correct a typo or caption timestamp to match the approved script
 - adjust animation timing to the approved scene duration
 - adjust local scene timing, captions, silence, levels, fades, or muxing while reusing the same narration
@@ -102,6 +103,8 @@ Write `review/review-report.md` containing:
 - Question for the user:
 ```
 
-For `CORRECTION REQUIRED`, send only the precise correction request to the existing coding/rendering agent. Review its rerender again. Do not broaden the request while it is being implemented.
+For an explicitly requested first-render-and-review partial workflow, complete this report after the first review pass and stop regardless of result. Record correction needs but do not send them to production, request a rerender, or present the artifact as final.
+
+For a complete workflow with `CORRECTION REQUIRED`, send only the precise correction request to the existing coding/rendering agent. Review its rerender again. Do not broaden the request while it is being implemented.
 
 After every rerender, discard the prior visual conclusion, extract a fresh scene-complete screenshot set from the latest MP4, and repeat the multimodal inspection. Return `PASS` only after checking the latest rendered MP4. For narrated output, report `automated review passed; user audiovisual approval pending` and keep the workflow open until the user accepts or requests a change. If compliance cannot be determined or a fix would cross the creative boundary, return `USER DECISION REQUIRED`.
