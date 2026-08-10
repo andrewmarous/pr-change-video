@@ -16,7 +16,8 @@ production/
   assets/              copied or generated production assets
   captions.vtt         timed captions
   narration.md         timed narration script
-  preview/              representative frames or contact sheet
+  narration/           request, untouched response, alignment, audio, and timing artifacts
+  preview/              optional production previews; not review evidence
   video.mp4             final render
   README.md             exact setup and render commands
   manifest.json         production and verification metadata
@@ -44,7 +45,18 @@ For Manim:
 
 ## Narration and captions
 
-Do not synthesize audio. Copy the approved timed narration into `narration.md`. Produce `captions.vtt` aligned with the storyboard timing. Visual timing must leave room for the planned narration even though the MP4 has no voice track.
+Generate ElevenLabs narration:
+
+1. Recompute a deterministic hash over the exact spoken text, voice ID, model ID, voice settings, pronunciation dictionary locators, and fixed output format. Reuse preserved narration only when every hashed input matches.
+2. Confirm the approved character count, credit estimate, model limit, and authorization before any billable call. Free read-only metadata calls are allowed. Voice previews, partial generations, test generations, and automatic regeneration are forbidden.
+3. Run `node <skill-directory>/scripts/narration-request.mjs <approved-narration.json>` and record its hash, character count, and estimated credits. Send its single request body to `POST /v1/text-to-speech/{voice_id}/with-timestamps?output_format=mp3_44100_128`.
+4. Before sending, write an attempt record with the request hash and `started` status. On an ambiguous failure, preserve it and stop. Never retry automatically. A second billable attempt requires a new estimate and explicit user approval.
+5. Preserve the untouched JSON response, original alignment, decoded source audio, and locally mastered narration. Never store the API key or authentication headers in an artifact.
+6. Convert character alignment into word, caption, and scene timings and write a machine-readable timing report. Treat natural narration timing as authoritative. Preserve scene order, content, visual direction, explicit silent intervals, the approved global padding, and per-scene overrides.
+7. Split captions at sentence or clause boundaries, preserve every spoken word, and keep cues to at most two lines of roughly 42 characters. A short linger is allowed only before the next cue and outside required visual beats.
+8. Retime and rerender visuals locally. Normalize narration near -16 LUFS with a -1.5 dBTP ceiling, add short boundary fades, and mux it as AAC. Narration must be the only audio track. If actual timing exceeds 120 seconds, stop for user approval; do not speed up speech or remove pauses silently.
+
+Local timing, caption, silence, level, fade, and mux corrections reuse the exact cached narration. Voice, model, delivery, voice-setting, or pronunciation changes require a new estimate and approval before one new full-script request. Spoken-wording changes invalidate approval and restart workflow step 1 in a new workspace, then rerun planning with prior artifacts and final-video feedback as additional context.
 
 ## Visual system
 
@@ -69,8 +81,9 @@ Before handing off, confirm:
 - the MP4 exists and is decodable;
 - resolution, frame rate, and duration match the plan within normal encoding tolerance;
 - captions parse and remain within the planned duration;
+- narrated output has exactly one decodable audio stream, the timing report matches the approved spoken text, and no clipping is detected;
 - there are no missing assets, blank unintended frames, or obvious render errors; and
-- representative frames or a contact sheet exist for review.
+- optional production previews, when created, are labeled by scene and timestamp; the review agent still extracts its own screenshots from the final MP4.
 
 Write `manifest.json` with renderer and version, source revision if applicable, render command, dimensions, FPS, frame count, duration, output paths, and verification results.
 

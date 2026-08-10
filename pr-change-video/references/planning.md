@@ -96,7 +96,7 @@ The approval packet must include:
 - selected renderer
 - evidence from the PR and planned scenes supporting the choice
 - why the other renderer is less effective for this explanation
-- any renderer-specific risk or dependency
+- any established renderer-specific risk or dependency material to the choice
 
 Keep the entire video in one renderer for v1.
 
@@ -122,6 +122,23 @@ Use only the parts of this compact narrative arc that the sources support:
 3. Mechanism at the chosen audience depth
 4. Stated impact, constraint, tradeoff, conclusion, or next step
 
+## ElevenLabs narration
+
+Own the exact spoken-only text and all generation-affecting choices. Do not include timestamps, speaker labels, scene labels, or production directions in the submitted text. Save the approved generation inputs as `plan/approved-narration.json` with the fields consumed by `scripts/narration-request.mjs`; derive its `text` by concatenating the timed-scene narration in scene order exactly once.
+
+Before approval, use only free read-only metadata requests to establish:
+
+- voice ID and name;
+- model ID, text-to-speech support, and maximum text length per request;
+- voice settings and pronunciation dictionary ID/version, when used;
+- exact submitted character count;
+- documented credit-per-character rate or model multiplier and its source; and
+- estimated request credits.
+
+Do not generate previews, samples, partial narration, or tests. If the applicable rate cannot be established, state that it is unknown and keep generation blocked. If the text exceeds the selected model's limit, shorten the plan and request approval again; never plan multiple speech requests.
+
+Use natural speech timing as authoritative after generation. Planned timestamps are estimates and may be retimed locally without changing scene order, content, or visual direction. Set one global scene-padding default and record only intentional per-scene overrides. Mark silent scenes and transitions explicitly; never encode silence through punctuation alone. Require fresh user approval if actual retiming would push the video over 120 seconds.
+
 ## Approval packet
 
 Target no more than 550 words. A longer packet requires a concrete reason. State each fact, caveat, exclusion, and production decision once. Combine the narrative, storyboard, narration, captions, and provenance into one timed scene table instead of repeating the same content across separate sections.
@@ -138,6 +155,9 @@ Write `plan/approval-packet.md` with this structure:
 - Renderer rationale and rejected alternative:
 - Target duration:
 - Visual system and brand treatment:
+- Narration: ElevenLabs
+- Narration authorization: voice ID; model ID and settings; pronunciation dictionary ID/version or none; exact spoken character count; documented credit rate and source; estimated credits; model request limit; one full-script request
+- Timing policy: global scene padding and any per-scene overrides or explicit silent intervals
 
 ## Source boundaries
 - Include only material contradictions, omissions, or gaps that the user must see before approval.
@@ -152,4 +172,4 @@ Write `plan/approval-packet.md` with this structure:
 Approve this packet or specify changes. Production remains paused.
 ```
 
-Ensure scene durations sum to the target duration and every narrative beat points back to IDs in the separate evidence ledger. Use the narration column verbatim as the caption source; split it into cues during production. Check that every evaluative, argumentative, causal, future-looking, or discussion-oriented statement is directly supported by user-provided context. Do not put renderer dependencies or speculative production risks in the approval packet. Clearly label presentation recommendations so the user can override them without changing source meaning.
+Ensure scene durations sum to the target duration and every narrative beat points back to IDs in the separate evidence ledger. Use the narration column verbatim as the caption source; split it into cues during production. Check that every evaluative, argumentative, causal, future-looking, or discussion-oriented statement is directly supported by user-provided context. Do not add speculative production risks; include only established renderer-specific risks or dependencies material to the choice. Clearly label presentation recommendations so the user can override them without changing source meaning.

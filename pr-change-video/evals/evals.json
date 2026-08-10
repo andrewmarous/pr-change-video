@@ -7,13 +7,15 @@
       "expected_output": "An approval packet that treats the final PR diff as authoritative, recommends Manim based on evolving memory and capacity state, exposes IC assumptions, and performs no production work before approval.",
       "files": ["evals/files/vector-reserve-pr.md"],
       "expectations": [
+        "The workflow runs the bundled requirements checker before creating the workspace, treats missing ffmpeg, ffprobe, or a nonempty ELEVENLABS_API_KEY as a blocker, never prints the key value, stops on failed required checks without installing dependencies, and defers renderer-specific checks until a renderer is approved.",
         "The workflow gathers the PR diff, reviews, inline comments, and general discussion.",
         "The plan distinguishes implementation facts from context-supported narrative claims, includes no inferred argumentative claims, and calls out the conflicting early explanation.",
         "The renderer choice is Manim because persistent conceptual objects transform over time, not merely because the topic is technical.",
         "The plan includes editable IC audience assumptions, a timed storyboard, narration, captions, and a renderer rationale.",
         "The artifact adds no implications, conclusions, next steps, discussion prompts, or causal links that are absent from the supplied context.",
         "The approval packet states each claim once where practical and stays at or below 550 words.",
-        "No animation source or render is created before explicit user approval."
+        "No animation source or render is created before explicit user approval.",
+        "The plan always includes ElevenLabs narration with exact spoken-only text, voice and model IDs, settings and pronunciation controls, exact character count, documented credit rate and estimated credits, validates the one-request model limit, and authorizes no paid preview or generation before approval."
       ]
     },
     {
@@ -28,7 +30,8 @@
         "The plan uses supplied brand assets without inventing brand rules.",
         "The artifact preserves source meaning without adding recommendations, implications, next steps, or invitations to further discussion.",
         "The approval packet states each claim once where practical and stays at or below 550 words.",
-        "The workflow stops for explicit approval before source creation or rendering."
+        "The workflow stops for explicit approval before source creation or rendering.",
+        "Codec and mastering details stay out of the approval packet, and production uses one timestamp-enabled full-script narration request followed by local alignment-driven scene and caption timing."
       ]
     },
     {
@@ -43,7 +46,9 @@
         "The approval packet states each claim once where practical and stays at or below 550 words.",
         "The renderer recommendation is justified by the planned explanatory primitives and includes why the alternative is weaker.",
         "The coding/rendering agent exclusively owns source changes and renders, while the review agent exclusively verifies.",
-        "Small implementation mismatches return to the coding/rendering agent; higher-level changes return to the user."
+        "The review agent extracts at least one screenshot from every scene in the final MP4, passes the images as multimodal LLM context, and records scene-level reasoning about plan fidelity, alignment, spacing, hierarchy, balance, consistency, contrast, legibility, and safe margins.",
+        "Small implementation mismatches return to the coding/rendering agent; higher-level changes return to the user.",
+        "Narrated delivery is marked automated review passed and user audiovisual approval pending; mechanical local fixes reuse cached narration, generation-affecting changes require a new estimate and approval, and spoken-wording changes restart planning."
       ]
     }
   ]

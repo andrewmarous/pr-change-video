@@ -11,9 +11,23 @@ Read:
 - production manifest and README
 - captions and narration
 - animation source
-- final MP4 and representative frames
+- final MP4
 
-Inspect the actual render, not only the source. Use metadata inspection, extracted frames, contact sheets, or other non-mutating tools as appropriate.
+Inspect the actual render, not only the source. The reviewer must create its own review frames from the final MP4; production previews are navigation aids, not review evidence.
+
+## Scene-by-scene visual inspection
+
+Before making any review decision:
+
+1. Read the approved timed scene table and map every scene to its exact interval in the final MP4.
+2. Extract at least one screenshot from a stable, information-rich moment in every scene and save it under `review/frames/`. Also extract additional frames when a scene has materially different visual states or a transition could introduce clipping, overlap, misalignment, or discontinuity. Do not use a transition boundary as a scene's only screenshot.
+3. Submit the screenshots as image context in the review agent's multimodal LLM request. Identify each image with its scene, timestamp, and approved-plan row; do not merely provide paths or a text description of the images.
+4. Reason explicitly about each scene's rendered appearance against both:
+   - the approved visual state, motion, on-screen text, visual direction, and brand treatment; and
+   - general design quality: alignment, spacing, hierarchy, balance, consistency, contrast, legibility, safe margins, and intentional placement.
+5. Record scene-level evidence in the review report. If image context cannot be inspected, compliance cannot be determined and the result cannot be `PASS`.
+
+Screenshots do not replace playback or temporal inspection. Inspect the MP4 for animation continuity, pacing, captions, and brief defects that a still frame may miss.
 
 ## Checks
 
@@ -22,9 +36,11 @@ Verify:
 1. **Specification:** source-derived content, audience treatment, renderer, visual direction, and scene order match the approved packet.
 2. **Timing:** total duration and scene pacing match the plan; text and visuals allow the narration time specified.
 3. **Claim fidelity:** implementation facts match the PR; all motivation, rationale, tradeoffs, intended impact, risks, conclusions, next steps, discussion prompts, and argumentative framing are directly supported by user-provided context; qualifications and caveats remain intact.
-4. **Visual correctness:** no clipping, overlap, unreadable text, accidental blank frames, broken assets, discontinuity, or misleading transformation.
-5. **Captions and narration:** the script is unchanged, captions are synchronized, and both fit within the render.
-6. **Technical delivery:** the MP4 is decodable and the manifest accurately describes it.
+4. **Visual correctness and design quality:** every scene matches its approved composition and has intentional alignment, spacing, hierarchy, balance, consistency, contrast, legibility, and safe margins; there is no clipping, overlap, misaligned text or objects, accidental blank frame, broken asset, discontinuity, or misleading transformation.
+5. **Captions and narration:** the spoken text is byte-for-byte unchanged, captions preserve every spoken word and are synchronized, scene timing follows the returned alignment, and explicit silence and padding are preserved.
+6. **Technical delivery:** the MP4 is decodable and the manifest accurately describes it. For narrated output, verify one audio stream is present, durations and muxing are coherent, and mechanical loudness and clipping checks pass.
+
+Automated review is mechanical. Do not claim to assess pronunciation, delivery, emotion, naturalness, or subjective voice quality. Those remain for the user's final-video review.
 
 For the plan and final artifact, also check that information is not repeated merely to satisfy multiple template headings. Repetition can change emphasis even when each repeated statement is accurate.
 
@@ -39,6 +55,7 @@ An in-scope small correction makes the implementation match an already approved 
 - repair clipping, overlap, contrast, or a missing asset
 - correct a typo or caption timestamp to match the approved script
 - adjust animation timing to the approved scene duration
+- adjust local scene timing, captions, silence, levels, fades, or muxing while reusing the same narration
 - restore an omitted approved label, qualifier, or visual state
 - fix a transition or transformation that does not implement the storyboard
 
@@ -48,6 +65,8 @@ A higher-level change requires the user. Examples:
 - change audience treatment, source-stated message, emphasis, or technical depth
 - add or remove a substantive claim or scene
 - rewrite narration beyond a literal production error
+- change voice, model, delivery, voice settings, or pronunciation, which requires a new credit estimate and approval
+- change any spoken wording, which invalidates approval and restarts workflow step 1 in a new workspace before planning runs again with prior artifacts and final-video feedback as context
 - switch renderer or visual direction
 - extend the approved duration
 - introduce a new metaphor or explanation
@@ -68,6 +87,9 @@ Write `review/review-report.md` containing:
 ## Checks
 | Check | Result | Evidence |
 
+## Scene inspection
+| Scene | Screenshot and timestamp | Approved-plan comparison | Design-quality assessment | Result |
+
 ## Correction request
 - Approved-plan reference:
 - Observed mismatch:
@@ -82,4 +104,4 @@ Write `review/review-report.md` containing:
 
 For `CORRECTION REQUIRED`, send only the precise correction request to the existing coding/rendering agent. Review its rerender again. Do not broaden the request while it is being implemented.
 
-Return `PASS` only after checking the latest rendered MP4. If compliance cannot be determined or a fix would cross the creative boundary, return `USER DECISION REQUIRED`.
+After every rerender, discard the prior visual conclusion, extract a fresh scene-complete screenshot set from the latest MP4, and repeat the multimodal inspection. Return `PASS` only after checking the latest rendered MP4. For narrated output, report `automated review passed; user audiovisual approval pending` and keep the workflow open until the user accepts or requests a change. If compliance cannot be determined or a fix would cross the creative boundary, return `USER DECISION REQUIRED`.

@@ -1,7 +1,6 @@
 ---
 name: pr-change-video
-description: Turn a GitHub pull request and its surrounding project context into a short stakeholder-ready changelog video using Remotion or Manim. Use this skill whenever a user asks to explain, present, summarize, animate, or make a video about a PR, code change, implementation, release, engineering update, or technical changelog—even if they do not name Remotion or Manim. It coordinates separate planning, coding/rendering, and review agents; recommends an audience and renderer; and requires user approval before production.
-compatibility: Requires GitHub access through gh or equivalent tools, subagent support, and the selected renderer (Remotion/Node.js or Manim/Python). ffmpeg and ffprobe are recommended for render inspection.
+description: Turn a GitHub pull request and its surrounding project context into a short narrated stakeholder-ready changelog video using Remotion or Manim and approval-gated ElevenLabs speech. Use whenever a user asks to explain, present, summarize, animate, narrate, or make a video about a PR, code change, implementation, release, engineering update, or technical changelog. Coordinate separate planning, coding/rendering, and review agents; recommend an audience and renderer; and require user approval before production or paid speech generation.
 ---
 
 # PR Change Video
@@ -37,11 +36,11 @@ Support these user controls:
 - Duration: 90 seconds by default; require explicit approval to exceed 120 seconds
 - Brand treatment: use supplied repository or company assets; otherwise use the restrained fallback system in `references/production.md`
 
-Do not synthesize narration audio. Produce a timed narration script and captions.
+Always generate ElevenLabs narration. Use one full-script timestamp-enabled speech request per approved generation attempt and synchronize scenes and captions locally from the returned alignment.
 
 ## Evidence boundaries
 
-Treat the current PR diff as the source of truth for implementation facts: what changed and what behavior the code implements. Treat user-provided context as the only source for motivation, rationale, tradeoffs, intended impact, risks, emphasis, conclusions, next steps, and argumentative framing.
+Treat the current PR diff as the source of truth for implementation facts: what changed and what behavior the code implements. Treat user-provided context as the only source for motivation, rationale, tradeoffs, intended impact, risks, emphasis, conclusions, next steps, and argumentative framing. Supplying a PR URL admits that PR's description, commits, reviews, inline comments, and discussion into the context set.
 
 Do not derive argumentative points from the code. A plausible interpretation of a diff can still conflict with how the creator understands or presents the work. If the supplied context does not establish why a change was made, how it should be evaluated, or what happens next, omit that point. Ask the user only when the missing information prevents a coherent artifact; do not invite expansion by default.
 
@@ -54,6 +53,12 @@ Apply these rules when sources disagree:
 Surface material contradictions in the approval packet. Never silently turn implementation details into creator intent. Distinguish implementation facts from attributed context claims. Do not include inference, analysis, recommendations, or proposed next steps in the video plan.
 
 ## Workflow
+
+### 0. Check requirements
+
+Resolve this skill's installed directory and run `node <skill-directory>/scripts/check-requirements.mjs --json`. Require a nonempty `ELEVENLABS_API_KEY`; the checker reports only whether it is set and never its value. Treat a nonzero exit as a blocker and report the failed checks without attempting to install or modify dependencies. Warnings are non-blocking.
+
+After the user approves a renderer, run the checker again with `--renderer remotion` or `--renderer manim` before production. Do not check both renderer toolchains or require an unselected renderer.
 
 ### 1. Create the workspace
 
@@ -81,6 +86,8 @@ Give the planning agent:
 
 Tell it to save the evidence ledger and approval packet in the workspace. The planning agent must inspect the PR description, commits, changed files, full diff, reviews, inline review comments, and general discussion. It must inspect relevant repository files when the diff alone is insufficient.
 
+Require `plan/approved-narration.json`; it contains the exact spoken-only generation inputs and no API key.
+
 ### 3. Stop for user approval
 
 Present the complete approval packet. Explicitly call out:
@@ -92,25 +99,27 @@ Present the complete approval packet. Explicitly call out:
 - duration; and
 - brand treatment.
 
+Call out the exact spoken text, voice and model choices, pronunciation controls, character count, documented credit rate, estimated credits, and model request limit. Keep audio and video encoding details out of the packet unless the user asks. Approval authorizes one generation attempt at the stated estimate; if the rate is unknown, do not guess or proceed.
+
 Keep the approval packet compact. The evidence ledger is a background audit artifact; do not copy it into the approval packet. State each source claim, boundary, and production decision once. Do not repeat scene claims in a summary, separate narration section, exclusions list, or checklist.
 
 Do not spawn the coding/rendering agent or create animation source until the user approves this packet. Apply requested planning changes through the planning agent and present the revised packet again.
 
-Approval freezes the source-derived content, audience treatment, storyboard, narration, renderer, duration, and visual direction. Record the approved packet separately from drafts.
+Approval freezes the source-derived content, audience treatment, storyboard, spoken wording, narration configuration, renderer, planned timing policy, and visual direction. Returned alignment may replace estimated scene timestamps without another approval when the resulting duration remains at or below 120 seconds and all other frozen decisions remain intact. Record the approved packet separately from drafts.
 
 ### 4. Spawn the coding/rendering agent
 
 After approval, give the coding/rendering agent only the evidence it needs, the frozen approval packet, brand assets, `references/production.md`, and the workspace path. It owns all animation source changes and rendering commands.
 
-Require it to render an MP4 and save a production manifest. A source-only result is incomplete unless a missing dependency or environment restriction makes rendering impossible; report that blocker precisely.
+Require it to render an MP4 and save a production manifest. Require one approved full-script generation or reuse of an exact cached match, then local timing and muxing. A source-only result is incomplete unless a missing dependency or environment restriction makes rendering impossible; report that blocker precisely.
 
 ### 5. Spawn the review agent
 
-Give the review agent read-only responsibility for the frozen approval packet, production manifest, source, and render. It follows `references/review.md` and writes a review report.
+Give the review agent read-only responsibility for the frozen approval packet, production manifest, source, and render. It follows `references/review.md`, extracts a screenshot from every scene (plus additional frames for materially different states), includes those images as context in its multimodal review request, evaluates the rendered composition against the plan and design-quality criteria, and writes a review report with scene-level evidence.
 
-If the render passes, finish. If it has a small implementation mismatch, the review agent sends a precise correction request to the existing coding/rendering agent. That agent changes the source and rerenders; the review agent then verifies the new render.
+If automated review passes, present the final video for user audiovisual approval and keep the workflow open. If it has a small implementation mismatch, the review agent sends a precise correction request to the existing coding/rendering agent. That agent changes the source and rerenders; the review agent then verifies the new render.
 
-If a proposed correction changes the source-derived content, audience treatment, storyboard, narration, renderer, duration, or visual direction, stop the loop and ask the user. The review agent cannot approve its own creative changes.
+Local timing, caption, silence, level, fade, and mux corrections reuse the narration and stay in the loop. A voice, model, delivery, or pronunciation change requires a fresh estimate and approval before one new full-script request. Any spoken-wording change invalidates approval and restarts workflow step 1 in a new workspace, then reruns planning with the prior packet, artifacts, and final-video feedback as context. Other frozen creative changes also return to the user.
 
 ### 6. Deliver
 
@@ -120,10 +129,11 @@ Return links or paths to:
 - animation source and build instructions;
 - the approved packet;
 - timed narration script and captions;
+- narration request, alignment, timing report, and preserved audio artifacts;
 - production manifest; and
 - final review report.
 
-State which claims are implementation facts from the PR and which narrative claims are directly supported by user-provided context. List unresolved gaps and caveats. Do not claim the video passed review unless the review report records a pass for the final render.
+State which claims are implementation facts from the PR and which narrative claims are directly supported by user-provided context. List unresolved gaps and caveats. For narrated output, report `automated review passed; user audiovisual approval pending` until the user accepts the final video. Never claim automated judgment of pronunciation, delivery, or subjective voice quality.
 
 ## Quality principles
 
