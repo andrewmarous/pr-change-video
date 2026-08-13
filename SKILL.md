@@ -1,6 +1,12 @@
 ---
 name: pr-change-video
-description: Turn a GitHub pull request and its surrounding project context into a short narrated stakeholder-ready changelog video using Remotion or Manim and approval-gated ElevenLabs speech. Use whenever a user asks to explain, present, summarize, animate, narrate, or make a video about a PR, code change, implementation, release, engineering update, or technical changelog. Coordinate separate planning, coding/rendering, and review agents; recommend an audience and renderer; and require user approval before production or paid speech generation.
+description: >-
+  Turn a GitHub pull request and its surrounding project context into a short,
+  narrated, stakeholder-ready changelog video using Remotion or Manim and
+  approval-gated ElevenLabs speech. Use when a user asks to explain, present,
+  summarize, animate, narrate, or make a video about a PR, code change,
+  implementation, release, engineering update, or technical changelog.
+license: MIT
 ---
 
 # PR Change Video
