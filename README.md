@@ -45,9 +45,9 @@ Optional inputs include design notes, issue links, transcripts, screenshots, dia
 
 ## Output
 
-Each run keeps its plans, evidence, source, narration, previews, and review artifacts in a unique hidden `.pr-change-video/<pr-or-timestamp>/` directory. It does not create a visible workspace folder.
+Each PR gets a hidden `.pr-change-video/pr-<number>/` directory. Individual runs keep their plans, evidence, source, narration, previews, and review artifacts under its `runs/` directory, so no visible workspace is created.
 
-The final MP4 is placed directly in a user-supplied output directory or an existing conventional project output directory. If neither exists, it is placed at the top level of the hidden run directory. The completion response reports its exact absolute path so it is never buried in the internal `production/` tree.
+The final MP4 is placed at the top level of the PR-specific directory—for example, `.pr-change-video/pr-44/video.mp4`. The completion response reports its exact absolute path so it is never buried in a run or `production/` tree.
 
 A run is complete only when it delivers a rendered MP4, animation source and build instructions, the frozen approval packet, narration and captions, a production manifest, and a review report for the final render. If rendering is blocked by a missing dependency or environment restriction, the agent reports that blocker precisely.
 

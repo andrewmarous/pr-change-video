@@ -75,22 +75,21 @@ either attempt.
 
 After the user approves a renderer, run the checker again with `--renderer remotion` or `--renderer manim` before production. Do not check both renderer toolchains or require an unselected renderer.
 
-### 1. Create the hidden workspace and choose delivery location
+### 1. Create the hidden PR workspace
 
-Keep working artifacts out of the user's visible project tree. Create a unique run directory under `.pr-change-video/` in the repository or current working directory:
+Keep all artifacts out of the user's visible project tree. Extract the PR number from the required GitHub PR URL and create a PR-specific directory under `.pr-change-video/` in the repository or current working directory. Put each run's working artifacts in a unique nested run directory, but put the delivered video at the top level of the PR-specific directory:
 
 ```text
-.pr-change-video/<pr-or-timestamp>/
-  evidence/
-  plan/
-  production/
-  review/
+.pr-change-video/pr-44/
   video.mp4
+  runs/<timestamp>/
+    evidence/
+    plan/
+    production/
+    review/
 ```
 
-Never create a visible workspace directory or scatter intermediate files through the project. Do not overwrite an earlier run.
-
-Choose the final-video delivery path before production. If the user supplied an output directory, use it. Otherwise, use an existing conventional visible output directory at the project root (`output/`, `outputs/`, `dist/`, or `build/`, in that priority order). Do not create such a directory merely for this skill. When one is selected, deliver the final MP4 directly at its top level with a clear PR-specific filename. If none exists, deliver it as `video.mp4` at the top level of the hidden run directory. Record the exact absolute delivery path and whether it is visible or hidden.
+For PR 44, the delivery path is therefore `.pr-change-video/pr-44/video.mp4`, not a visible output directory and not a file inside `production/` or `runs/`. Never create a visible workspace or output directory. Do not overwrite an earlier run's working artifacts. A corrected rerender for the same approved workflow may replace the top-level `video.mp4`; otherwise preserve an existing delivery by choosing a clear suffixed MP4 filename alongside it. Record the exact absolute delivery path.
 
 ### 2. Spawn the planning agent
 
@@ -151,7 +150,7 @@ Local timing, caption, silence, level, fade, and mux corrections reuse the narra
 
 ### 6. Deliver
 
-Begin the delivery response with the exact absolute path to the rendered MP4 and plainly say whether it is in an existing visible output directory or the hidden run directory. Do not make the user search through a production tree.
+Begin the delivery response with the exact absolute path to the rendered MP4 in the hidden PR-specific directory. Do not make the user search through a `production/` or `runs/` tree.
 
 Return links or paths to:
 
