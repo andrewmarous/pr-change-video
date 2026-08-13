@@ -19,6 +19,10 @@ Use these implementer notes as context, and stop after planning for my approval.
 
 The skill requires a GitHub PR URL and authenticated GitHub access. Narrated production also requires an `ELEVENLABS_API_KEY` and a supported renderer toolchain. See [SKILL.md](SKILL.md) for the complete workflow and requirements.
 
+## Output
+
+Working artifacts stay in a unique hidden `.pr-change-video/` run directory. The final MP4 goes directly into a supplied or already-existing output directory when available; otherwise it sits at the hidden run directory's top level. The agent reports its exact absolute path.
+
 ## Repository layout
 
 ```text

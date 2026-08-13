@@ -75,19 +75,22 @@ either attempt.
 
 After the user approves a renderer, run the checker again with `--renderer remotion` or `--renderer manim` before production. Do not check both renderer toolchains or require an unselected renderer.
 
-### 1. Create the workspace
+### 1. Create the hidden workspace and choose delivery location
 
-Create a dedicated output directory without overwriting unrelated files:
+Keep working artifacts out of the user's visible project tree. Create a unique run directory under `.pr-change-video/` in the repository or current working directory:
 
 ```text
-pr-change-video-output/
+.pr-change-video/<pr-or-timestamp>/
   evidence/
   plan/
   production/
   review/
+  video.mp4
 ```
 
-If that directory exists, choose a PR-specific or timestamped sibling.
+Never create a visible workspace directory or scatter intermediate files through the project. Do not overwrite an earlier run.
+
+Choose the final-video delivery path before production. If the user supplied an output directory, use it. Otherwise, use an existing conventional visible output directory at the project root (`output/`, `outputs/`, `dist/`, or `build/`, in that priority order). Do not create such a directory merely for this skill. When one is selected, deliver the final MP4 directly at its top level with a clear PR-specific filename. If none exists, deliver it as `video.mp4` at the top level of the hidden run directory. Record the exact absolute delivery path and whether it is visible or hidden.
 
 ### 2. Spawn the planning agent
 
@@ -132,7 +135,7 @@ Approval freezes the source-derived content, audience treatment, storyboard, spo
 
 After approval, give the coding/rendering agent only the evidence it needs, the frozen approval packet, brand assets, `references/production.md`, and the workspace path. It owns all animation source changes and rendering commands.
 
-Require it to render an MP4 and save a production manifest. For narrated runs, require one approved full-script generation or reuse of an exact cached match, then local timing and muxing. For an approved silent partial run, render from estimated scene timings with no narration call, captions, audio, or muxing, and label all outputs as intermediate. A source-only result is incomplete unless a missing dependency or environment restriction makes rendering impossible; report that blocker precisely.
+Require it to render an MP4, save a production manifest, and place the completed MP4 at the previously selected delivery path. The authoritative final video must not remain buried under `production/`; internal render files may remain there. For narrated runs, require one approved full-script generation or reuse of an exact cached match, then local timing and muxing. For an approved silent partial run, render from estimated scene timings with no narration call, captions, audio, or muxing, and label all outputs as intermediate. A source-only result is incomplete unless a missing dependency or environment restriction makes rendering impossible; report that blocker precisely.
 
 Immediately before the billable request, require production to repeat the
 filtered authenticated v2 lookup and stop if the approved ID/name pair is no
@@ -148,9 +151,11 @@ Local timing, caption, silence, level, fade, and mux corrections reuse the narra
 
 ### 6. Deliver
 
+Begin the delivery response with the exact absolute path to the rendered MP4 and plainly say whether it is in an existing visible output directory or the hidden run directory. Do not make the user search through a production tree.
+
 Return links or paths to:
 
-- the rendered MP4;
+- the top-level delivered MP4;
 - animation source and build instructions;
 - the approved packet;
 - timed narration script and captions;
