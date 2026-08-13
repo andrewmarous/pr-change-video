@@ -21,7 +21,7 @@ The skill requires a GitHub PR URL and authenticated GitHub access. Narrated pro
 
 ## Output
 
-Working artifacts stay in a unique hidden `.pr-change-video/` run directory. The final MP4 goes directly into a supplied or already-existing output directory when available; otherwise it sits at the hidden run directory's top level. The agent reports its exact absolute path.
+Each PR gets a hidden `.pr-change-video/pr-<number>/` directory. Working artifacts stay in unique directories under `runs/`, while the final MP4 sits at the PR directory's top level—for example, `.pr-change-video/pr-44/video.mp4`. The agent reports its exact absolute path.
 
 ## Repository layout
 

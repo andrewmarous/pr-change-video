@@ -23,7 +23,7 @@ production/
   manifest.json         production and verification metadata
 ```
 
-Place the completed MP4 at the delivery path selected during workspace setup: directly inside the user-supplied or existing conventional output directory, or as `video.mp4` at the top level of the hidden run directory. The delivery copy is authoritative and must not be buried in `production/`. Use a clear PR-specific filename in a visible output directory. Record its absolute path in `manifest.json`.
+Place the completed MP4 at the top level of the hidden PR-specific directory as `video.mp4` (for example, `.pr-change-video/pr-44/video.mp4`). The delivery copy is authoritative and must not be buried in `production/` or the nested `runs/` directory. A correction to the same approved workflow may replace it; otherwise preserve an existing delivery and use a clear suffixed MP4 filename beside it. Record its absolute path in `manifest.json`.
 
 Do not overwrite user-owned source, an existing video, or unrelated repository files.
 
