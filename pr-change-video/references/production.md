@@ -8,7 +8,7 @@ Treat the approved packet as a production specification. Do not change its conte
 
 ## Output layout
 
-Write to `production/`:
+Write internal artifacts to the hidden run's `production/` directory:
 
 ```text
 production/
@@ -18,12 +18,14 @@ production/
   narration.md         timed narration script
   narration/           request, untouched response, alignment, audio, and timing artifacts
   preview/              optional production previews; not review evidence
-  video.mp4             final render
+  render.mp4            internal render or staging copy
   README.md             exact setup and render commands
   manifest.json         production and verification metadata
 ```
 
-Do not overwrite user-owned source or unrelated repository files.
+Place the completed MP4 at the delivery path selected during workspace setup: directly inside the user-supplied or existing conventional output directory, or as `video.mp4` at the top level of the hidden run directory. The delivery copy is authoritative and must not be buried in `production/`. Use a clear PR-specific filename in a visible output directory. Record its absolute path in `manifest.json`.
+
+Do not overwrite user-owned source, an existing video, or unrelated repository files.
 
 ## Renderer rules
 

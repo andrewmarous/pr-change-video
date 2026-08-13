@@ -45,26 +45,9 @@ Optional inputs include design notes, issue links, transcripts, screenshots, dia
 
 ## Output
 
-Each run writes to a dedicated `pr-change-video-output/` directory, or a PR-specific or timestamped sibling if that path already exists:
+Each run keeps its plans, evidence, source, narration, previews, and review artifacts in a unique hidden `.pr-change-video/<pr-or-timestamp>/` directory. It does not create a visible workspace folder.
 
-```text
-pr-change-video-output/
-  evidence/
-    evidence-ledger.md
-  plan/
-    approval-packet.md
-  production/
-    src/
-    assets/
-    captions.vtt
-    narration.md
-    preview/
-    video.mp4
-    README.md
-    manifest.json
-  review/
-    review-report.md
-```
+The final MP4 is placed directly in a user-supplied output directory or an existing conventional project output directory. If neither exists, it is placed at the top level of the hidden run directory. The completion response reports its exact absolute path so it is never buried in the internal `production/` tree.
 
 A run is complete only when it delivers a rendered MP4, animation source and build instructions, the frozen approval packet, narration and captions, a production manifest, and a review report for the final render. If rendering is blocked by a missing dependency or environment restriction, the agent reports that blocker precisely.
 

@@ -9,6 +9,7 @@
       "expectations": [
         "The workflow runs the bundled requirements checker before creating the workspace, probes ffmpeg and ffprobe with -version, treats either missing command or a nonempty ELEVENLABS_API_KEY as a blocker, never prints the key value, retries an otherwise isolated GitHub-authentication failure by requesting an outside-sandbox run of the same checker before reporting the user as unauthenticated, stops on confirmed failed required checks without installing dependencies, and defers renderer-specific checks until a renderer is approved.",
         "The workflow gathers the PR diff, reviews, inline comments, and general discussion.",
+        "All plans, evidence, production source, narration artifacts, previews, and review artifacts live in a unique hidden .pr-change-video run directory; no visible workspace directory is created. The final MP4 is delivered directly in a user-supplied or already-existing conventional output directory, otherwise at the hidden run directory's top level, and the response begins with its exact absolute path and visibility.",
         "The plan distinguishes implementation facts from context-supported narrative claims, includes no inferred argumentative claims, and calls out the conflicting early explanation.",
         "The renderer choice is Manim because persistent conceptual objects transform over time, not merely because the topic is technical.",
         "The plan includes editable IC audience assumptions, a timed storyboard, narration, captions, and a renderer rationale.",
